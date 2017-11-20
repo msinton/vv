@@ -13,7 +13,7 @@ import org.scalatest.{FunSuite, OptionValues}
 /**
  * Created by matt on 09/07/15.
  */
-class ProcessingActionsBetweenServerAndClientTest extends FunSuite  with OptionValues {
+class ProcessingActionsBetweenServerAndClientTest extends FunSuite with OptionValues {
 
   val tools = new Tools()
   val toolUtils = new ToolUtils(tools)

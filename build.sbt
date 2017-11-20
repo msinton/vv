@@ -40,6 +40,8 @@ lazy val lib = project.in(file("lib"))
 
     libraryDependencies += "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13",
 
+    libraryDependencies += "io.suzaku" %% "diode" % "1.1.2",
+
     Defaults.itSettings
   )
 

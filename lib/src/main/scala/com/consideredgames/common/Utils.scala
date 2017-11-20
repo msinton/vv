@@ -4,9 +4,6 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.Random
 
-/**
- * Created by matt on 17/03/15.
- */
 object Utils {
 
   type ToProperties[A, B] = A => Traversable[B]
@@ -93,4 +90,5 @@ object Utils {
     val index = random.nextInt(list.size)
     list.toBuffer(index)
   }
+
 }

@@ -14,7 +14,7 @@ import scala.concurrent.Future
 /**
   * Created by matt on 19/04/17.
   */
-class ConnectToServer()(implicit val system: ActorSystem, implicit val materializer: ActorMaterializer) {
+class WebsocketFlow()(implicit val system: ActorSystem, implicit val materializer: ActorMaterializer) {
 
   private val source = Source.actorRef[Message](bufferSize = 5, OverflowStrategy.dropNew)
 

@@ -4,23 +4,29 @@ import com.consideredgames.game.event.Event
 import com.consideredgames.game.model.player.PlaceholderPlayer
 import com.consideredgames.game.model.player.PlayerColours.PlayerColour
 import com.consideredgames.game.state._
-
+import diode.Action
 
 object Messages {
 
-  sealed trait Message extends Event
+  sealed trait Message extends Event with Action
 
   trait Request extends Message
 
-  case class SessionStarted() extends Message
-  case class Register(username: String, passwordHash: String, email: String) extends Request
-  case class RegisterResponseSuccess(username: String, sessionId: String) extends Message
-  case class RegisterResponseUsernameUnavailable(suggestions: List[String]) extends Message with Error
-  case class RegisterResponseInvalid(reasons: List[String]) extends Message with ReasonsError
+  trait ConnectResponseError extends Message
+  trait ConnectRequest extends Request
 
-  case class Login(username: String, passwordHash: String, email: String) extends Request
+  case class SessionStarted() extends Message
+
+  case class Register(username: String, passwordHash: String, email: String) extends ConnectRequest
+
+  case class RegisterResponseSuccess(username: String, sessionId: String) extends Message
+  case class RegisterResponseUsernameUnavailable(suggestions: List[String]) extends ConnectResponseError with Error
+  case class RegisterResponseInvalid(reasons: List[String]) extends ConnectResponseError with ReasonsError
+
+  case class Login(username: String, passwordHash: String, email: String) extends ConnectRequest
+
   case class LoginResponseSuccess(username: String, sessionId: String) extends Message
-  case class LoginResponseInvalid(reasons: List[String]) extends Message with ReasonsError
+  case class LoginResponseInvalid(reasons: List[String]) extends ConnectResponseError with ReasonsError
 
   case class Logout() extends Request
   case class ForceLogout(username: String) extends Message

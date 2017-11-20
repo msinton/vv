@@ -25,7 +25,7 @@ class GameService(implicit val actorSystem: ActorSystem,
 
   import akka.pattern.ask
 
-  implicit val timeout: akka.util.Timeout = 10 seconds
+  implicit val timeout: akka.util.Timeout = 10.seconds
 
   private val lobbyWorker = actorSystem.actorOf(Props(new LobbyActor()), "lobby-worker")
   private val sessionWorker = actorSystem.actorOf(Props(new SessionActor(lobbyWorker)), "session-worker")
