@@ -2,6 +2,7 @@ package com.consideredgames.connect
 
 import akka.Done
 import akka.stream.scaladsl.Sink
+import com.consideredgames.connect.actions.Disconnected
 import com.consideredgames.message.Messages.Message
 import diode.Dispatcher
 

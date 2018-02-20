@@ -69,6 +69,7 @@ case class Point(id: Int) {
     }
   }
 
+
   final def createNewBranch(hex: Hex, direction: Direction, limit: Int, riverNetwork: RiverNetwork): Unit = {
 
     if (limit - 1 > 0) {
@@ -101,7 +102,8 @@ case class Point(id: Int) {
     }
   }
 
-  @tailrec final def deleteBranch(riverNetwork: RiverNetwork): Unit = {
+  @tailrec
+  final def deleteBranch(riverNetwork: RiverNetwork): Unit = {
     val fromRivers = riversFlowingFrom()
     // if there is just one river flowing from this point and there is nothing flowing to here then delete.
     if (fromRivers.size == 1 && riversFlowingTo().isEmpty) {

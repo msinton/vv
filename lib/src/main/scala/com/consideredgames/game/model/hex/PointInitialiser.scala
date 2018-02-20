@@ -1,8 +1,6 @@
 package com.consideredgames.game.model.hex
 
-/**
- * Created by Matt.Sinton-Hewitt on 23/03/2015.
- */
+
 object PointInitialiser {
 
   def setupPoints(hexes: Iterator[Hex], pointFactory: PointFactory): Unit = {
@@ -43,7 +41,7 @@ object PointInitialiser {
       } else {
         // new point for all hexes
         hexes = (hex, vertex) :: hexes
-        val point = pointFactory.build()
+        val point = pointFactory.create
         for ((h,v) <- hexes) {
 
           h.vertices.update(v, point)

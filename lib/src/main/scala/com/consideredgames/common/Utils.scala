@@ -24,7 +24,9 @@ object Utils {
    * @tparam Z the type of the values
    * @return An inverse mapping from the properties to the items as a Set
    */
-  def createInverseMappingWithValueTransform[Y, X <: AnyRef, Z](list: Seq[Y])(g: Y => Z)(f: ToProperties[Y, X]): (collection.Map[X, Set[Z]]) = {
+  def createInverseMappingWithValueTransform[Y, X <: AnyRef, Z](list: Seq[Y])
+                                                               (g: Y => Z)
+                                                               (f: ToProperties[Y, X]): (collection.Map[X, Set[Z]]) = {
 
     val map = mutable.AnyRefMap.empty[X, Set[Z]]
 

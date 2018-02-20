@@ -7,9 +7,7 @@ import com.consideredgames.game.model.person.Person
 
 import scala.collection._
 
-/**
- * Created by Matt.Sinton-Hewitt on 09/03/2015.
- */
+
 case class Hex protected(id: Int) extends Comparable[Hex] {
 
   import scala.collection.JavaConversions._
@@ -41,7 +39,7 @@ case class Hex protected(id: Int) extends Comparable[Hex] {
 
   var wall: Option[Wall] = None
 
-  def hexType = hexType_
+  def hexType: HexType = hexType_
 
   def boats: mutable.Map[Side, Boat] = boats_
 
@@ -76,7 +74,7 @@ case class Hex protected(id: Int) extends Comparable[Hex] {
   def getRiverNeighbours = {
     var rivers = Set[RiverSegment]()
     for (point <- vertices.values) {
-      rivers = rivers ++ point.getRivers.toSet
+      rivers = rivers ++ point.getRivers
     }
     rivers
   }
@@ -96,7 +94,7 @@ case class Hex protected(id: Int) extends Comparable[Hex] {
   }
 
   def neighboursAccessibleByFoot(): collection.Map[Side,Hex] = {
-    neighbours.filter { case (side, hex) => rivers_.contains(side) && !bridges_.contains(side)}
+    neighbours.filter { case (side, _) => rivers_.contains(side) && !bridges_.contains(side)}
   }
 }
 

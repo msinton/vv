@@ -7,9 +7,7 @@ import com.consideredgames.game.model.hex.Side._
 
 import scala.util.Random
 
-/**
- * Created by matt on 26/03/15.
- */
+
 class PointTest extends FunSuite with OptionValues {
 
   test("getRivers") {

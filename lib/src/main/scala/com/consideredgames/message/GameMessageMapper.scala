@@ -13,9 +13,7 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 import org.json4s.{CustomKeySerializer, MappingException, ShortTypeHints}
 
-/**
- * Created by matt on 26/06/15.
- */
+
 class GameMessageMapper(val animalInfos: List[AnimalInfo], val tools: Tools) {
 
   val playerColourStrings: Set[String] = PlayerColours.playerColoursSet map {_.name}

@@ -6,9 +6,6 @@ import org.json4s.ShortTypeHints
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 
-/**
- * Created by matt on 17/07/15.
- */
 object MessageMapper {
 
   implicit val formats = Serialization.formats(ShortTypeHints(Messages.classes)) +

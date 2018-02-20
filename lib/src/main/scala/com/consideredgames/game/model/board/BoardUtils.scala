@@ -2,9 +2,6 @@ package com.consideredgames.game.model.board
 
 import com.consideredgames.game.model.hex.{Boat, Hex, RiverSegment, Side}
 
-/**
- * Created by Matt.Sinton-Hewitt on 18/03/2015.
- */
 
 case class BoardUtils(boardData: BoardData) {
 

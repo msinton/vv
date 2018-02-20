@@ -8,8 +8,9 @@
         </encoder>
     </appender>
 
-    <!--example of how to enable a specific log level for a class-->
+    <!--uncomment to enable specific log level for a class-->
     <!--<logger name="com.consideredgames.game.model.hex.RiverNetwork" level="DEBUG"/>-->
+    <!--<logger name="com.consideredgames.game.model.hex.FlowInitialiser2" level="DEBUG"/>-->
 
     <root level="info">
         <appender-ref ref="STDOUT" />

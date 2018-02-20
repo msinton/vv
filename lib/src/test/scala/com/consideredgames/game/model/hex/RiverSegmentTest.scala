@@ -10,7 +10,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     val s = Side.north
     val r = RiverSegment(h, s)
 
-    assert(!r.hasFlow)
+    assert(r.flow.isEmpty)
 
     assert(r.getNeighbours(inflowDirection = true).isEmpty)
     assert(r.getNeighbours(inflowDirection = false).isEmpty)
@@ -41,7 +41,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     h2.neighbours.update(s2,h)
     val r = RiverSegment(h, s)
 
-    assert(!r.hasFlow)
+    assert(r.flow.isEmpty)
 
     assert(r.getNeighbours(inflowDirection = true).isEmpty)
     assert(r.getNeighbours(inflowDirection = false).isEmpty)
@@ -85,7 +85,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     r.setFlow(fromPoint = p, toPoint = p2)
 
-    assert(r.hasFlow)
+    assert(r.flow.isDefined)
 
     assert(r.getNeighbours(inflowDirection = true).isEmpty)
     assert(r.getNeighbours(inflowDirection = false).isEmpty)
@@ -141,7 +141,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     r.setFlow(fromPoint = p, toPoint = p2)
 
-    assert(r.hasFlow)
+    assert(r.flow.isDefined)
 
     // rivers that it flows into/from
     assert(r.getNeighbours(inflowDirection = true).isEmpty)
@@ -398,7 +398,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     r.setFlowUsingFrom(p)
 
-    assert(r.hasFlow)
+    assert(r.flow.isDefined)
 
     assert(r.flow.value.from === p)
     assert(r.flow.value.to === p2)

@@ -1,13 +1,9 @@
 package com.consideredgames.game.model.hex
 
-/**
- * Created by Matt.Sinton-Hewitt on 11/03/2015.
- */
+
 case class RiverSegment(hexA: Hex, sideA: Side) extends BordersHex {
 
   var flow: Option[Flow] = None
-
-  def hasFlow = flow.isDefined
 
   //TODO rename to getNeighbouringRivers and change to tuple of (Seq RiverSegment, point)
   /**
@@ -60,7 +56,7 @@ case class RiverSegment(hexA: Hex, sideA: Side) extends BordersHex {
 
   //TODO refactor this out of this class - flowInitialiser as scala
   def getNeighboursWithoutFlow(inflowDirection: Boolean) = {
-    getNeighbours(inflowDirection).filterNot(_._1.hasFlow)
+    getNeighbours(inflowDirection).filterNot(_._1.flow.isDefined)
   }
 
   def neighbours() = (getNeighbours(inflowDirection = true) ++ getNeighbours(inflowDirection = false)).toMap

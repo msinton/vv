@@ -8,9 +8,7 @@ import com.consideredgames.game.model.person.{NewPersonInstruction, Person}
 import com.consideredgames.game.model.person.tools.{RichToolInfo, Tool}
 import com.consideredgames.game.model.round.principal.{ActionFulfillment, ActionResult, AttackResults}
 
-/**
- * Created by matt on 27/02/15.
- */
+
 abstract class GameMessage
 
 trait Movement

@@ -16,8 +16,6 @@ import scala.util.Random
  *
  * Randomly arrange hexes according to a grid scheme consisting of columns. Not all 'slots' are filled.
  *
- * <pre> TODO fix scaladoc format to look as below
- * {@code
  * column:  0   1   2   3  ... totalColumns-1
  *             '0'    '0'          '0'
  *         '0'     '0'
@@ -29,8 +27,6 @@ import scala.util.Random
  *             'N-1'
  * 	       'N-1'  'N-1'
  * 			   'N'
- * }
- * </pre>
  */
 
 class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[AnimalInfo]) extends LazyLogging {
@@ -179,7 +175,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
     def getHexWeighting = { hexType: HexType => hexType.getWeighting.toInt }
     val hexTypesAsList: List[HexType] = HexType.values().toList
 
-    for (index <- 0 until totalHexes) {
+    for (_ <- 0 until totalHexes) {
 
       val hexType = Utils.getRandomWeighted(hexTypesAsList, HexType.getTotalWeighting, getHexWeighting, random)
       val hex: Hex = Hex(hexCount, hexType)
@@ -188,7 +184,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
       val animalWeightingsTotal = animalInfos.foldLeft(0) { case (x: Int, info: AnimalInfo) => info.rarity + x }
       def getAnimalWeighting = { animalInfo: AnimalInfo => animalInfo.rarity }
       val animalType = Utils.getRandomWeighted(animalInfos, animalWeightingsTotal, getAnimalWeighting, random)
-      for (i <- 0 until (random.nextInt(2) + 1)) {
+      for (_ <- 0 until (random.nextInt(2) + 1)) {
         AnimalManager.addAnimalTo(hex, Animal(animalType, random.nextBoolean()), animalInfos)
       }
 
@@ -223,7 +219,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
       }
 
       for (positionIndex <- 0 until length) {
-        setHexPosition(hexesIterator.next()._2, new HexPosition(columnsIndex, start + positionIndex))
+        setHexPosition(hexesIterator.next()._2, HexPosition(columnsIndex, start + positionIndex))
       }
     }
   }

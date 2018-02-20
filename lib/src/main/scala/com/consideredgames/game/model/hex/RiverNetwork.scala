@@ -267,8 +267,8 @@ class RiverNetwork(random: Random) extends LazyLogging {
    */
   final def setupFlow() {
     if (!flowSetup) {
-      val flowInitialiser = new FlowInitialiser()
-      flowInitialiser.setup(rivers, random)
+      val flowInitialiser = new FlowInitialiser(random)
+      flowInitialiser.setup(rivers)
       flowSetup = true
     }
   }

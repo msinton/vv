@@ -5,9 +5,7 @@ import com.consideredgames.game.model.hex.Point
 import com.consideredgames.game.model.person.Person
 import com.consideredgames.game.model.round.principal._
 
-/**
- * Created by matt on 15/07/15.
- */
+
 object MapDeserialisedObjects {
 
   /**
