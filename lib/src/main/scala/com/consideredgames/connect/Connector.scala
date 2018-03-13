@@ -1,6 +1,7 @@
 package com.consideredgames.connect
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model.HttpResponse
 import akka.stream.ActorMaterializer
 import com.consideredgames.message.MessageMapper
 import com.consideredgames.message.Messages._
@@ -35,7 +36,7 @@ class ConnectorImpl(name: String, config: Config, dispatch: Dispatcher)
 
   private def open(json: String, path: String): Future[MessageSender] =
     for {
-      response <- HttpMethods.post(config, json, path)
+      response <- formatFailedHttp(HttpMethods.post(config, json, path))
       parsed <- httpResponseParse(response)
       sender <- Future.fromTry(toSocketMessageSender(parsed))
     } yield sender
@@ -46,4 +47,6 @@ class ConnectorImpl(name: String, config: Config, dispatch: Dispatcher)
   override def open(r: Login): Future[MessageSender] =
     open(MessageMapper.toJson(r), "login")
 
+  private def formatFailedHttp(f: Future[HttpResponse]) =
+    f.transform(s => s, f => ServiceUnavailableException("no connection", f))
 }

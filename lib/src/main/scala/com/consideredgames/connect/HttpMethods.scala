@@ -3,6 +3,7 @@ package com.consideredgames.connect
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ContentTypes.`application/json`
+import akka.http.scaladsl.model.StatusCodes.Success
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, HttpMethods => verbs}
 import akka.stream.ActorMaterializer
 import com.typesafe.config.Config

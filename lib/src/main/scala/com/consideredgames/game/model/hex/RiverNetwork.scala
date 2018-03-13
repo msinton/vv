@@ -35,6 +35,9 @@ class RiverNetwork(random: Random) extends LazyLogging {
    * Creates the river network, using many helper methods - if the network has not already been created.
    */
   def init(hexes: Iterable[Hex], numberOfPlayers: Int) {
+
+    require(numberOfPlayers > 0, "number of players must be at least one")
+
     if (!networkCreated) {
       while (!creationMain(hexes, numberOfPlayers)) {
       }
@@ -133,25 +136,10 @@ class RiverNetwork(random: Random) extends LazyLogging {
     if (groups != null) {
       groups.clear()
     }
-    var totalGroups: Int = 0
-    if (numberOfPlayers == 0) {
-      throw new IllegalArgumentException("When creating the river network - number of players cannot be zero!")
-    }
-    else if (numberOfPlayers == 1) {
-      totalGroups = 2
-    }
-    else {
-      totalGroups = numberOfPlayers
-    }
+    val totalGroups = if (numberOfPlayers == 1) 2
+    else numberOfPlayers
 
-    var groupNumber: Int = 0
-    while (groupNumber < totalGroups) {
-      {
-        groups.add(ArrayBuffer.empty)
-      }
-      groupNumber += 1
-    }
-
+    (0 until totalGroups).foreach(_ => groups.add(ArrayBuffer.empty))
   }
 
   /**
@@ -198,7 +186,7 @@ class RiverNetwork(random: Random) extends LazyLogging {
 
         for (groupIndex <- groupIndexes) {
           currentlayer = currentLayers.get(groupIndex)
-          nextlayer = groups.get(groupIndex).get(layerIndex + 1)
+          nextlayer = groups.get(groupIndex).get(layerIndex + 1) // index out of bounds 7
           if (currentlayer.nonEmpty) {
             tempHex = Utils.getRandom(currentlayer, random)
             if (addHexesToLayer(nextlayer, tempHex, 1) == 0) {
@@ -215,7 +203,7 @@ class RiverNetwork(random: Random) extends LazyLogging {
       }
     }
     else {
-      throw new IllegalArgumentException
+      throw new IllegalArgumentException("fix me")
     }
     success
   }

@@ -12,8 +12,8 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     assert(r.flow.isEmpty)
 
-    assert(r.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
     assert(!r.flowsTowards(h))
 
@@ -43,8 +43,8 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     assert(r.flow.isEmpty)
 
-    assert(r.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
     assert(!r.flowsTowards(h))
     assert(!r.flowsTowards(h2))
@@ -87,8 +87,8 @@ class RiverSegmentTest extends FunSuite with OptionValues {
 
     assert(r.flow.isDefined)
 
-    assert(r.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
     assert(r.flowsTowards(h))
     assert(r.flowsTowards(h2))
@@ -124,7 +124,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(0,0), h3)
     hexMap.update(HexPosition(2,0), h4)
 
-    BoardUtils.connectHexes(hexMap)
+    BoardUtils.connectHexes(hexMap.toMap)
 
     val s = Side.north
     val s2 = Side.south
@@ -144,8 +144,8 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     assert(r.flow.isDefined)
 
     // rivers that it flows into/from
-    assert(r.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
     assert(r.flowsTowards(h))
     assert(r.flowsTowards(h2))
@@ -187,7 +187,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(0,0), h3)
     hexMap.update(HexPosition(2,0), h4)
 
-    BoardUtils.connectHexes(hexMap)
+    BoardUtils.connectHexes(hexMap.toMap)
 
     val s = Side.north
     val s2 = Side.south
@@ -213,13 +213,13 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     r2.setFlow(fromPoint = p2, toPoint = p3)
 
     // rivers that it flows into/from
-    assert(r.getNeighbours(inflowDirection = true).size === 1)
-    assert(r.getNeighbours(inflowDirection = true).contains(r2))
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).size === 1)
+    assert(r.getNeighbour(inflowDirection = true).exists(_._1 == r2))
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
-    assert(r2.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r2.getNeighbours(inflowDirection = false).size === 1)
-    assert(r2.getNeighbours(inflowDirection = false).contains(r))
+    assert(r2.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r2.getNeighbour(inflowDirection = false).size === 1)
+    assert(r2.getNeighbour(inflowDirection = false).exists(_._1 == r))
 
     assert(r.flowsTowards(h))
     assert(r.flowsTowards(h2))
@@ -280,7 +280,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(0,0), h3)
     hexMap.update(HexPosition(2,0), h4)
 
-    BoardUtils.connectHexes(hexMap)
+    BoardUtils.connectHexes(hexMap.toMap)
 
     val s = Side.north
     val s2 = Side.south
@@ -314,20 +314,20 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     r3.setFlow(fromPoint = p4, toPoint = p2)
 
     // rivers that it flows into/from
-    assert(r.getNeighbours(inflowDirection = true).size === 2)
-    assert(r.getNeighbours(inflowDirection = true).contains(r2))
-    assert(r.getNeighbours(inflowDirection = true).contains(r3))
-    assert(r.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r.getNeighbour(inflowDirection = true).size === 2)
+    assert(r.getNeighbour(inflowDirection = true).exists(_._1 == r2))
+    assert(r.getNeighbour(inflowDirection = true).exists(_._1 == r3))
+    assert(r.getNeighbour(inflowDirection = false).isEmpty)
 
-    assert(r2.getNeighbours(inflowDirection = true).isEmpty)
-    assert(r2.getNeighbours(inflowDirection = false).size === 2)
-    assert(r2.getNeighbours(inflowDirection = false).contains(r))
-    assert(r2.getNeighbours(inflowDirection = false).contains(r3))
+    assert(r2.getNeighbour(inflowDirection = true).isEmpty)
+    assert(r2.getNeighbour(inflowDirection = false).size === 2)
+    assert(r2.getNeighbour(inflowDirection = false).exists(_._1 == r))
+    assert(r2.getNeighbour(inflowDirection = false).exists(_._1 == r3))
 
-    assert(r3.getNeighbours(inflowDirection = true).size === 2)
-    assert(r3.getNeighbours(inflowDirection = true).contains(r))
-    assert(r3.getNeighbours(inflowDirection = true).contains(r2))
-    assert(r3.getNeighbours(inflowDirection = false).isEmpty)
+    assert(r3.getNeighbour(inflowDirection = true).size === 2)
+    assert(r3.getNeighbour(inflowDirection = true).exists(_._1 == r))
+    assert(r3.getNeighbour(inflowDirection = true).exists(_._1 == r2))
+    assert(r3.getNeighbour(inflowDirection = false).isEmpty)
 
     assert(r3.flowsTowards(h))
     assert(r3.flowsTowards(h2))
@@ -417,7 +417,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(0,0), h3)
     hexMap.update(HexPosition(2,0), h4)
 
-    BoardUtils.connectHexes(hexMap)
+    BoardUtils.connectHexes(hexMap.toMap)
 
     val s = Side.north
     val s2 = Side.south
@@ -469,7 +469,7 @@ class RiverSegmentTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(0,0), h3)
     hexMap.update(HexPosition(2,0), h4)
 
-    BoardUtils.connectHexes(hexMap)
+    BoardUtils.connectHexes(hexMap.toMap)
 
     val rivers = List[RiverSegment]()
     val r1 = RiverSegment.create(rivers, h, Side.north)

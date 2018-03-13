@@ -80,7 +80,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
         }
       }
     }
-    BoardUtils.connectHexes(hexesByPosition)
+    BoardUtils.connectHexes(hexesByPosition.toMap)
 
     // debugging
     for (hex <- hexes.values) {
@@ -88,9 +88,9 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
       logger.debug("Hex neighbours:" + hex.neighbours)
     }
 
-    PointInitialiser.setupPoints(hexes.values.iterator, new PointFactory)
+    PointInitialiser.setupPoints(hexes.values)
     val riverNetwork = new RiverNetwork(random)
-    riverNetwork.init(hexes.values, numberOfPlayers)
+    riverNetwork.init(hexes.values.toList, numberOfPlayers)
     riverNetwork.setupFlow()
     logger.debug("Board Creation Done")
     riverNetwork
@@ -99,10 +99,6 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
   def add(manager: AnimalManager) {
     animalManagers.add(manager)
   }
-
-  def getHexPosition(hex: Hex): Option[HexPosition] = positionsByHex.get(hex)
-
-  def getHexes: Iterable[Hex] = hexes.values
 
   /**
    * The number of rows.
@@ -168,7 +164,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
   }
 
   /**
-   * Initialise the <code>hexes</code> ArrayList with randomly assigned hex types.
+   * Initialise the hexes with randomly assigned hex types.
    */
   private def initialiseHexes() {
 

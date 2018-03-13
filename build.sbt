@@ -1,13 +1,11 @@
-organization := "com.consideredgames"
 name := "vv"
 
-version := "1.0"
-
 lazy val commonSettings = Seq(
+  organization := "com.consideredgames",
+
   scalaVersion := "2.11.11",
 
-  scalacOptions += "-feature",
-  scalacOptions += "-Ylog-classpath",
+  scalacOptions ++= Seq("-feature", "-Ylog-classpath", ""),
 
   resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases",
   resolvers += Resolver.bintrayRepo("commercetools", "maven"),
@@ -33,6 +31,8 @@ lazy val lib = project.in(file("lib"))
   .configs(IntegrationTest)
   .settings(
     commonSettings,
+
+    name := "vv-lib",
 
     resolvers += "softprops-maven" at "http://dl.bintray.com/content/softprops/maven",
 

@@ -38,16 +38,16 @@ abstract class BordersHex {
 
   def sideB: Option[Side] = BordersHex.sideB(hexA, hexB)
 
-  protected def addToHexes(sideA: Side) {
+  protected def addToHexes(sideA: Side): Unit = {
     hexA.add(sideA, this)
     // add for hexB
     (hexB, sideB) match {
       case (Some(h), Some(s)) => h.add(s, this)
-      case _ =>
+      case _ => // do nothing
     }
   }
 
-  def removeFromHexes() = {
+  def removeFromHexes(): Unit = {
     hexA.remove(sideA, this)
     hexB foreach (_.remove(sideB.get, this))
   }
@@ -59,7 +59,7 @@ abstract class BordersHex {
   /**
    * If the point given is one of the river's points then returns its <i>other</i> point.
    */
-  final def getOtherPoint(point: Point): Option[Point] = {
+  final def otherPoint(point: Point): Option[Point] = {
 
     val pointA = hexA.vertices.get(sideA.clockwiseVertex)
     val pointB = hexA.vertices.get(sideA.anticlockwiseVertex)

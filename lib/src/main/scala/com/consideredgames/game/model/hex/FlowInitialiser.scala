@@ -35,8 +35,10 @@ class FlowInitialiser(random: Random) extends LazyLogging {
         logger.debug(s"Setting random flow $randomRiver")
 
         val next =
-          setRandomFlow(randomRiver).getNeighbours(inflowDirection = true).keys.map(setFlowFrom(_, randomRiver.flow.get.to)) ++
-            randomRiver.getNeighbours(inflowDirection = false).keys.map(setFlowTowards(_, randomRiver.flow.get.from))
+          setRandomFlow(randomRiver).getNeighbour(inflowDirection = true)
+            .map(x => setFlowFrom(x._1, randomRiver.flow.get.to)) ++
+            randomRiver.getNeighbour(inflowDirection = false)
+              .map(y => setFlowTowards(y._1, randomRiver.flow.get.from))
 
         logger.debug(s"Random flow next: $next")
         continueRiverFlow(next.toList)
@@ -68,8 +70,8 @@ class FlowInitialiser(random: Random) extends LazyLogging {
       case Nil => logger.debug("<--- continue river flow finished")
       case _ => continueRiverFlow(riversWithFlow.flatMap(r => {
         val point = r.flow.get.to
-        point.getRivers.filter(_.flow.isEmpty).map(setFlowFrom(_, point)) //TODO see if this works by doing getNeighbours??
-      })) //TODO or delete getNeighbours - unnecessarily complex!
+        point.getRivers.filter(_.flow.isEmpty).map(setFlowFrom(_, point))
+      }))
     }
   }
 

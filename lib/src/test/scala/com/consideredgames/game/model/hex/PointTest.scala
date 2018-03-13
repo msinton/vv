@@ -35,8 +35,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -75,8 +75,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -122,8 +122,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -176,8 +176,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -226,8 +226,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -275,8 +275,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)
@@ -332,8 +332,8 @@ class PointTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(1, 2), h6)
     hexMap.update(HexPosition(2, 1), h7)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
 
     //points flowing from
     val p1 = h2.vertices(Vertex.E)

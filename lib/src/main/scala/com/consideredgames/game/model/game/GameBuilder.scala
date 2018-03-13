@@ -13,9 +13,6 @@ import com.consideredgames.game.model.season.WeatherWeightings
 
 import scala.util.Random
 
-/**
- * Created by matt on 03/09/15.
- */
 object GameBuilder {
 
   private def setupPlayers(players: List[Player], myName: String, toolUtils: ToolUtils): (List[PlayerWithPeople], FullPlayer) = {
@@ -40,7 +37,8 @@ object GameBuilder {
     val boardUtils = BoardUtils(boardData)
     val weatherManager = new WeatherManager(WeatherWeightings.defaultEasy, random)
     val deploymentProcessor = DeploymentProcessor(boardUtils)
-    val principalActionsProcessor = new PrincipalActionsProcessor(new Actions(toolUtils, newGameConfig.animalInfos), random, weatherManager, boardData)
+    val principalActionsProcessor = new PrincipalActionsProcessor(
+      new Actions(toolUtils, newGameConfig.animalInfos), random, weatherManager, boardData)
 
     val gameProcessors = GameProcessors(deploymentProcessor, principalActionsProcessor)
 

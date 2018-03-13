@@ -125,7 +125,7 @@ case class Point(id: Int) {
 
       // The initial river has to be deleted first, then we can use deleteBranch to do the rest.
       // This is because of the way deleteBranch works and the fact we have already created a new branch.
-      val nextPointForRiverDeletion = fromRiver.getOtherPoint(this)
+      val nextPointForRiverDeletion = fromRiver.otherPoint(this)
       nextPointForRiverDeletion foreach {
         riverNetwork.removeRiver(fromRiver)
         _.deleteBranch(riverNetwork)

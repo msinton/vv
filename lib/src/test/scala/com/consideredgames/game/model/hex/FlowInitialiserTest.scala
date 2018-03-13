@@ -21,8 +21,8 @@ class FlowInitialiserTest extends FunSuite with OptionValues {
     hexMap.update(HexPosition(2, 0), h4)
     hexMap.update(HexPosition(0, 1), h5)
 
-    BoardUtils.connectHexes(hexMap)
-    PointInitialiser.setupPoints(hexMap.values.iterator, new PointFactory())
+    BoardUtils.connectHexes(hexMap.toMap)
+    PointInitialiser.setupPoints(hexMap.values)
   }
 
   /**

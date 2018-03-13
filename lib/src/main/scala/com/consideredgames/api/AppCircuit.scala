@@ -25,7 +25,7 @@ class AppCircuit(implicit val ec: ExecutionContext) extends Circuit[RootModel] {
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
-  lazy val connectionProtocols = new ConnectionProtocolsImpl(this, system.settings.config)
+  lazy val connectionProtocols = new ConnectionProtocolsImpl(this)
 
   override protected def initialModel: RootModel = RootModel()
 

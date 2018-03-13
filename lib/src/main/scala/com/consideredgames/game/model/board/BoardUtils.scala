@@ -38,11 +38,7 @@ object BoardUtils {
     hexB.neighbours.put(sideA.opposite, hexA)
   }
 
-  def connectHexes(hexes: java.util.Map[HexPosition, Hex]): Unit = {
-    connectHexes(collection.JavaConversions.mapAsScalaMap(hexes))
-  }
-
-  def connectHexes(hexes: collection.mutable.Map[HexPosition, Hex]): Unit = {
+  def connectHexes(hexes: Map[HexPosition, Hex]): Unit = {
 
     // Starting at 0 - this makes all the difference in how the hexes relate
     // to one another. (N,NE..)

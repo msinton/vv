@@ -3,7 +3,7 @@ package com.consideredgames.game.model.hex
 
 object PointInitialiser {
 
-  def setupPoints(hexes: Iterator[Hex], pointFactory: PointFactory): Unit = {
+  def setupPoints(hexes: Iterable[Hex], pointFactory: PointFactory = new PointFactory): Unit = {
     for (hex <- hexes) {
       setupVertices(hex, pointFactory)
     }
