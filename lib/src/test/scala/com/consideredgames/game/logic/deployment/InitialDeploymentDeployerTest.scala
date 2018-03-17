@@ -12,9 +12,6 @@ import org.scalatest.{FunSuite, OptionValues}
 
 import scala.util.Random
 
-/**
- * Created by matt on 05/10/15.
- */
 class InitialDeploymentDeployerTest extends FunSuite with OptionValues {
 
   val toolUtils = ToolUtils(new Tools())

@@ -92,5 +92,23 @@ object Utils {
     val index = random.nextInt(list.size)
     list.toBuffer(index)
   }
+  def sample[T](list: IndexedSeq[T], random: Random): Option[T] = {
+    if (list.isEmpty) None else {
+      val index = random.nextInt(list.size)
+      Option(list(index))
+    }
+  }
+
+  def sample[T](list: IndexedSeq[T], random: Random, n: Int): IndexedSeq[T] = {
+    if (list.size <= n) list else {
+      val indices = list.indices.toBuffer
+      val result = mutable.ArrayBuffer.empty[T]
+      while (result.size < n) {
+        val ind = indices.remove(random.nextInt(indices.size))
+        result.append(list(ind))
+      }
+      result
+    }
+  }
 
 }

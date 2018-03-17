@@ -90,8 +90,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
 
     PointInitialiser.setupPoints(hexes.values)
     val riverNetwork = new RiverNetwork(random)
-    riverNetwork.init(hexes.values.toList, numberOfPlayers)
-    riverNetwork.setupFlow()
+    riverNetwork.generate(hexes.values.toList, numberOfPlayers)
     logger.debug("Board Creation Done")
     riverNetwork
   }
@@ -174,7 +173,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
     for (_ <- 0 until totalHexes) {
 
       val hexType = Utils.getRandomWeighted(hexTypesAsList, HexType.getTotalWeighting, getHexWeighting, random)
-      val hex: Hex = Hex(hexCount, hexType)
+      val hex = Hex(hexCount, hexType)
 
       //animals
       val animalWeightingsTotal = animalInfos.foldLeft(0) { case (x: Int, info: AnimalInfo) => info.rarity + x }

@@ -50,7 +50,7 @@ trait Deploys {
 
   def submit(): Unit
 
-  protected def placePerson(person: Person, hex: Hex) = {
+  protected def placePerson(person: Person, hex: Hex): Boolean = {
     if (isValid(person, hex)) {
       deploymentProcessor.deploy(person, hex)
       placedPeople = DeployedPerson(person, HexLocation(hex)) :: placedPeople

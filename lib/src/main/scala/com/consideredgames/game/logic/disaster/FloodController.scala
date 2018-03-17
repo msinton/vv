@@ -34,7 +34,7 @@ class FloodController(riverNetwork: RiverNetwork, random: Random, roundsToFlood:
       }.getOrElse(river.hexA)
     }
 
-    for (river <- riverNetwork.getRivers) {
+    for (river <- riverNetwork.rivers) {
       if (random.nextInt(100) <= floodPercent) {
         val hex = getHexOnSideOfRiverAtRandom(river)
 

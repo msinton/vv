@@ -7,7 +7,9 @@ import scala.util.Random
 
 class RiverNetworkTest extends FunSuite {
 
-  def createRiverNetwork(numPlayers: Int, random: Random): RiverNetwork = {
+  type Result = (Seq[RiverSegment], Seq[HexGroup])
+
+  def createRiverNetwork(numPlayers: Int, random: Random): (Seq[RiverSegment], Seq[HexGroup]) = {
     val hexes = (0 until 21).map(i => Hex(i, HexType.CLAY))
 
     val hexesByPos = hexes.zipWithIndex.map({
@@ -18,18 +20,17 @@ class RiverNetworkTest extends FunSuite {
     PointInitialiser.setupPoints(hexes)
 
     val rn = new RiverNetwork(random)
-    rn.init(hexes, numPlayers)
-    rn
+    rn.generate(hexes, numPlayers)
   }
 
-  def allDistinct[T](sets: List[scala.collection.Set[T]]): Boolean = {
+  def allDistinct[T](sets: Seq[scala.collection.Set[T]]): Boolean = {
     sets.reduce(_ union _).size == sets.map(_.size).sum
   }
 
-  def assertGroupsAreSeparate(n: Int)(rn: RiverNetwork, expectedNum: Int) = test(s"$n: Groups Are Separate") {
-    val splitGroups = rn.getGroups.toList
-    assert(splitGroups.size == expectedNum)
-    assert(allDistinct(splitGroups))
+  def assertGroupsAreSeparate(n: Int)(result: Result, expectedNum: Int) = test(s"$n: Groups Are Separate") {
+    val (_, groups) = result
+    assert(groups.size == expectedNum)
+    assert(allDistinct(groups))
   }
 
   case class RiverGroup(body: Set[RiverSegment] = Set(), heads: Seq[RiverSegment] = Nil)
@@ -55,29 +56,27 @@ class RiverNetworkTest extends FunSuite {
     }
   }
 
-  def assertRiversAreConnected(n: Int)(rn: RiverNetwork, expectedNumGroups: Int) = test(s"$n: Rivers Are Connected") {
-    rn.setupFlow()
-    val rivers = rn.getRivers
-
+  def assertRiversAreConnected(n: Int)(result: Result, expectedNumGroups: Int) = test(s"$n: Rivers Are Connected") {
+    val (rivers, _) = result
     val riverGroups = separateRiverGroups(rivers)
 
     assert(riverGroups.nonEmpty)
-    assert(riverGroups.size <= expectedNumGroups)
+    assert(riverGroups.size <= expectedNumGroups, "rivers should connect up such that there is at most the same " +
+      "connected number of distinct rivers as hex groups")
     assert(allDistinct(riverGroups))
   }
 
   def allChecks(n: Int)(random: Random, numPlayers: Int): Unit = {
 
-    val rn = createRiverNetwork(numPlayers, random)
+    val result = createRiverNetwork(numPlayers, random)
 
     val expectedNumGroups = if (numPlayers == 1) 2 else numPlayers
 
-    assertGroupsAreSeparate(n)(rn, expectedNumGroups)
-    assertRiversAreConnected(n)(rn, expectedNumGroups)
+    assertGroupsAreSeparate(n)(result, expectedNumGroups)
+    assertRiversAreConnected(n)(result, expectedNumGroups)
   }
 
-  (0 to 10).foreach(i => {
+  (0 to 100).foreach(i => {
     allChecks(i)(new Random(i), numPlayers = 1 + (i % 3))
   })
-
 }

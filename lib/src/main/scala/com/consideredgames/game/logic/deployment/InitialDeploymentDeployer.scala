@@ -5,9 +5,6 @@ import com.consideredgames.game.model.person.Person
 import com.consideredgames.game.model.player.PlayerWithPeople
 import com.consideredgames.message.DeployedPerson
 
-/**
- * Created by matt on 05/10/15.
- */
 case class InitialDeploymentDeployer(player: PlayerWithPeople, peopleToDeploy: List[Person],
                                      deploymentProcessor: DeploymentProcessor,
                                      submitHandle: (List[DeployedPerson]) => Unit,
@@ -21,9 +18,9 @@ case class InitialDeploymentDeployer(player: PlayerWithPeople, peopleToDeploy: L
 
   def findAvailableGroups() = {
     if (firstPlayer)
-      boardUtils.boardData.riverNetwork.getGroups
+      boardUtils.boardData.riverNetwork.groups
     else
-      boardUtils.boardData.riverNetwork.getGroups.filter { hexGroup =>
+      boardUtils.boardData.riverNetwork.groups.filter { hexGroup =>
         hexGroup.forall(_.person.isEmpty)
       }
   }

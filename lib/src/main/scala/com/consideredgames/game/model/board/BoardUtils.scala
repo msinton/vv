@@ -19,7 +19,7 @@ case class BoardUtils(boardData: BoardData) {
   }
 
   def mapToGameElement(river: RiverSegment): Option[RiverSegment] = {
-    boardData.riverNetwork.getRivers.find(_ == river)
+    boardData.riverNetwork.rivers.find(_ == river)
   }
 
 }
