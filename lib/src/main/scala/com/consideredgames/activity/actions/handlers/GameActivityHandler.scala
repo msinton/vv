@@ -13,21 +13,20 @@ import diode.{ActionHandler, ActionResult, ModelRO, ModelRW}
 
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Created by matt on 25/11/17.
-  */
 class GameActivityHandler[M](modelRW: ModelRW[M, Games], profile: ModelRO[Option[Profile]])
-  extends ActionHandler(modelRW) {
+    extends ActionHandler(modelRW) {
 
   private def readyGameToGameConfig(readyGame: NewGameReady): Try[NewGameConfig] = {
-    val opts = readyGame.newGameOptions
+    val opts           = readyGame.newGameOptions
     val animalInfosTry = opts.animalInfos.fold(AnimalInfo.importFromFile())(AnimalInfo.readFromString)
     val toolsTry: Try[Tools] = opts.tools.fold(Try(Tools())) { json =>
-      ToolInfo.readFromString(json) map { toolInfo => Tools(toolInfo) }
+      ToolInfo.readFromString(json) map { toolInfo =>
+        Tools(toolInfo)
+      }
     }
     for {
       animalInfos <- animalInfosTry
-      tools <- toolsTry
+      tools       <- toolsTry
       config = NewGameConfig(readyGame.players, readyGame.seed, animalInfos, tools, List())
     } yield config
   }
@@ -40,7 +39,7 @@ class GameActivityHandler[M](modelRW: ModelRW[M, Games], profile: ModelRO[Option
       readyGame <- value.ready
         .find(_.gameId == gameId)
         .fold[Try[NewGameReady]](Failure(startGameException))(Success(_))
-      config <- readyGameToGameConfig(readyGame)
+      config   <- readyGameToGameConfig(readyGame)
       username <- profile.value.fold[Try[Username]](Failure(startGameException))(p => Success(p.username))
     } yield GameBuilder.build(config, username)
 

@@ -6,9 +6,6 @@ import com.consideredgames.server.routes.tasks.MessageWithIp
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by matt on 13/07/17.
-  */
 class RegisterSupervisor(implicit val executionContext: ExecutionContext) extends Actor {
 
   var router: Router = {

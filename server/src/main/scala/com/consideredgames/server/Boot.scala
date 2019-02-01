@@ -4,37 +4,36 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.consideredgames.server.db.Indexes
+import com.consideredgames.server.util.Binding
+import com.typesafe.scalalogging.LazyLogging
 
-import scala.util.{Failure, Success}
+import scala.util.Try
 
-/**
-  * Created by matt on 22/03/17.
-  */
-object Boot extends App {
+object Boot extends App with LazyLogging {
 
-  implicit val system = ActorSystem("vv-server")
+  implicit val system       = ActorSystem("vv-server")
   implicit val materializer = ActorMaterializer()
   import system.dispatcher
 
   val config = system.settings.config
-  val host = config.getString("app.host")
-  val port = config.getInt("app.port")
+  val host   = config.getString("app.host")
+  val port   = config.getInt("app.port")
 
-  Indexes.initialise().onFailure {
-    case e =>
-      println(s"Indexes failed to initialise: ${e.getMessage}")
-      system.terminate()
+  lazy val shutdownHook = {
+    logger.info("------------- Shutting down -------------")
+    system.terminate()
+    sys.exit(1)
   }
 
-  val server = new GameService()
-
-  val binding = Http().bindAndHandle(server.route, host, port)
-  binding.onComplete {
-    case Success(serverBinding) =>
-      val localAddress = serverBinding.localAddress
-      println(s"Server is listening on ${localAddress.getHostName}:${localAddress.getPort}")
-    case Failure(e) =>
-      println(s"Binding failed with ${e.getMessage}")
-      system.terminate()
+  Try {
+    for {
+      _ <- Indexes.initialise().failed.map(Indexes.handleFailure(shutdownHook))
+      server   = new GameService()
+      bindingF = Http().bindAndHandle(server.route, host, port)
+      _        = bindingF.failed.map(Binding.handleFailure(shutdownHook))
+      binding <- bindingF
+      _ = Binding.logStatus(binding)
+    } yield logger.info("----------------- Service started -----------------")
   }
+
 }

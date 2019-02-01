@@ -7,9 +7,6 @@ import com.consideredgames.connect.state.Messages
 import com.consideredgames.message.Messages.Request
 import diode.{ActionHandler, ModelRW}
 
-/**
-  * Created by matt on 19/11/17.
-  */
 class SocketMessageHandler[M](modelRW: ModelRW[M, Messages]) extends ActionHandler(modelRW) {
 
   var messageSender: Option[MessageSender] = None
@@ -24,14 +21,15 @@ class SocketMessageHandler[M](modelRW: ModelRW[M, Messages]) extends ActionHandl
       messageSender = None
       noChange
 
-    case m: Request => messageSender match {
-      case Some(sender) =>
-        sender.send(m)
-        updated(value.copy(history = m :: value.history))
+    case m: Request =>
+      messageSender match {
+        case Some(sender) =>
+          sender.send(m)
+          updated(value.copy(history = m :: value.history))
 
-      case None =>
-        updated(value.copy(unsent = (DateUtils.nowAsMillis, m) :: value.unsent))
-    }
+        case None =>
+          updated(value.copy(unsent = (DateUtils.nowAsMillis, m) :: value.unsent))
+      }
 
   }
 }

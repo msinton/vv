@@ -11,9 +11,6 @@ import diode.ActionResult.{ModelUpdate, NoChange}
 import diode.RootModelRW
 import org.scalatest.FunSuite
 
-/**
-  * Created by matt on 19/11/17.
-  */
 class SocketMessageHandlerTest extends FunSuite {
 
   trait handlerSetup {

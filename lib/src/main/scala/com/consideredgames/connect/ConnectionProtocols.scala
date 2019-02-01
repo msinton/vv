@@ -8,16 +8,13 @@ import diode.Dispatcher
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-/**
-  * Created by matt on 19/11/17.
-  */
 trait ConnectionProtocols {
   def connect(request: ConnectRequest): Future[MessageSender]
 }
 
-class ConnectionProtocolsImpl(dispatcher: Dispatcher)
-                             (implicit val system: ActorSystem, implicit val materializer: ActorMaterializer)
-  extends ConnectionProtocols {
+class ConnectionProtocolsImpl(dispatcher: Dispatcher)(implicit val system: ActorSystem,
+                                                      implicit val materializer: ActorMaterializer)
+    extends ConnectionProtocols {
 
   implicit val timeout: akka.util.Timeout = 10.seconds
 
@@ -26,6 +23,6 @@ class ConnectionProtocolsImpl(dispatcher: Dispatcher)
 
   def connect(request: ConnectRequest): Future[MessageSender] = request match {
     case r: Register => connector.open(r)
-    case r: Login => connector.open(r)
+    case r: Login    => connector.open(r)
   }
 }

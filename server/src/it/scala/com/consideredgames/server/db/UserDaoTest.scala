@@ -9,17 +9,13 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/**
-  * Created by matt on 11/05/17.
-  */
 class UserDaoTest extends FunSuite with BeforeAndAfterEach with ScalaFutures {
 
   implicit val defaultPatience =
     PatienceConfig(timeout = Span(8, Seconds), interval = Span(10, Millis))
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     UserDao.indexes.futureValue
-  }
 
   override def afterEach(): Unit = {
     val del = UserDao.users.deleteMany(equal("username", "Jimmy")).toFuture().futureValue
@@ -27,8 +23,8 @@ class UserDaoTest extends FunSuite with BeforeAndAfterEach with ScalaFutures {
   }
 
   val username = "Jimmy"
-  val email = "jim@m.com"
-  val hash = "hashshs"
+  val email    = "jim@m.com"
+  val hash     = "hashshs"
 
   test("testInsertUser") {
     val insert = UserDao.insert(User(username, email, hash)).futureValue
@@ -78,5 +74,3 @@ class UserDaoTest extends FunSuite with BeforeAndAfterEach with ScalaFutures {
     assert(result.head == userToInsert)
   }
 }
-
-

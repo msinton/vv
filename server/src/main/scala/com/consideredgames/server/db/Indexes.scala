@@ -1,16 +1,21 @@
 package com.consideredgames.server.db
 
+import com.typesafe.scalalogging.LazyLogging
+
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
-  * Created by matt on 11/07/17.
-  */
-object Indexes {
+object Indexes extends LazyLogging {
 
-  def initialise()(implicit ec: ExecutionContext): Future[Any] = {
+  val indexFailureMsg = "Indexes failed to initialise"
+
+  def initialise()(implicit ec: ExecutionContext): Future[Any] =
     for {
-      _ <- UserDao.indexes
-      f <- SessionDao.indexes
+      _ <- UserDao.indexes.toFuture()
+      f <- SessionDao.indexes.toFuture()
     } yield f
+
+  def handleFailure(action: => Any)(e: Throwable): Unit = {
+    logger.error(indexFailureMsg, e)
+    action
   }
 }

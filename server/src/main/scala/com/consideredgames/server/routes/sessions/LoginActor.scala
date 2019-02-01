@@ -9,9 +9,6 @@ import com.consideredgames.server.routes.tasks.MessageWithIp
 
 import scala.concurrent.ExecutionContext
 
-/**
-  * Created by matt on 13/07/17.
-  */
 class LoginActor(implicit val executionContext: ExecutionContext) extends Actor {
 
   private def handleIsAuthenticated(username: String, ip: String) = {
@@ -19,13 +16,12 @@ class LoginActor(implicit val executionContext: ExecutionContext) extends Actor 
     LoginResponseSuccess(username, sessionId)
   }
 
-  private def authenticateUserAndResponse(username: String, passwordHash: String, email: String, ip: String) = {
+  private def authenticateUserAndResponse(username: String, passwordHash: String, email: String, ip: String) =
     UserDao.get(username, email.toLowerCase) collect {
       case User(_, _, _, h) if EncryptionUtils.validatePassword(passwordHash, h) => handleIsAuthenticated(username, ip)
-      case _: User => LoginResponseInvalid(List("password incorrect"))
-      case _ => LoginResponseInvalid(List("user not found"))
+      case _: User                                                               => LoginResponseInvalid(List("password incorrect"))
+      case _                                                                     => LoginResponseInvalid(List("user not found"))
     }
-  }
 
   override def receive: Receive = {
 

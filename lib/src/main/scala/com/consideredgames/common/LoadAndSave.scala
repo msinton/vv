@@ -8,9 +8,6 @@ import com.typesafe.scalalogging.LazyLogging
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Created by matt on 14/04/17.
-  */
 object LoadAndSave extends LazyLogging {
 
   /**
@@ -29,14 +26,15 @@ object LoadAndSave extends LazyLogging {
     *
     * @param separator For example a comma.
     */
-  def readFromCSVToSeq(filename: String, separator: String): Seq[Seq[String]] = {
-    Source.fromFile(filename).getLines()
+  def readFromCSVToSeq(filename: String, separator: String): Seq[Seq[String]] =
+    Source
+      .fromFile(filename)
+      .getLines()
       .map(_.split(",").map(_.trim).toList)
       .filterNot(_.forall(_.isEmpty))
       .toList
-  }
 
-  def safeReadFromCSVToSeq(filename: String, separator: String): Try[Seq[Seq[String]]] = {
+  def safeReadFromCSVToSeq(filename: String, separator: String): Try[Seq[Seq[String]]] =
     try {
       Success(readFromCSVToSeq(filename, separator))
     } catch {
@@ -49,5 +47,4 @@ object LoadAndSave extends LazyLogging {
         Failure(ex)
       }
     }
-  }
 }

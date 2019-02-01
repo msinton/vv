@@ -4,9 +4,6 @@ import java.nio.file.{Files, Path, Paths}
 
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
-/**
-  * Created by matt on 14/04/17.
-  */
 class LoadAndSaveTest extends FunSuite with BeforeAndAfterEach {
 
   val testFilename = "test-load-and-save"
@@ -18,8 +15,8 @@ class LoadAndSaveTest extends FunSuite with BeforeAndAfterEach {
 
   test("testWriteToCSV") {
 
-    val values = List("Hi", "Bob")
-    val values2 = List("How", "are you?")
+    val values     = List("Hi", "Bob")
+    val values2    = List("How", "are you?")
     val path: Path = Paths.get(System.getProperty("user.home"), testFilename)
     LoadAndSave.writeToCSV(path, ",", values)
     LoadAndSave.writeToCSV(path, ",", values2)
@@ -31,8 +28,8 @@ class LoadAndSaveTest extends FunSuite with BeforeAndAfterEach {
 
   test("testReadFromCSVToSeq") {
 
-    val values = List("Hi", "Bob ")
-    val values2 = List(" ")
+    val values     = List("Hi", "Bob ")
+    val values2    = List(" ")
     val path: Path = Paths.get(System.getProperty("user.home"), testFilename)
     LoadAndSave.writeToCSV(path, ",", values)
     LoadAndSave.writeToCSV(path, ",", values2)
@@ -44,7 +41,7 @@ class LoadAndSaveTest extends FunSuite with BeforeAndAfterEach {
   test("testSafeReadFromCSVToSeq when exception") {
 
     val path: Path = Paths.get(System.getProperty("user.home"), "not-a-file")
-    val result = LoadAndSave.safeReadFromCSVToSeq(path.toString, ",")
+    val result     = LoadAndSave.safeReadFromCSVToSeq(path.toString, ",")
 
     assert(result.isFailure)
   }
