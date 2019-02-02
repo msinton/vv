@@ -7,83 +7,80 @@ import com.consideredgames.game.model.resources.ItemContainer
 import scala.collection.GenTraversable
 
 /**
- * Created by matt on 16/03/15.
- */
+  * Created by matt on 16/03/15.
+  */
 case class ToolUtils(allToolInfo: Tools) {
 
   /**
-   * @return (false,x) if the person does not have a needed core tool - and then helpfully x contains the core tools
-   */
-  def coreRequirementSatisfied(person: Person, skillType: SkillType): (Boolean, Option[collection.Set[RichToolInfo]]) = {
-
+    * @return (false,x) if the person does not have a needed core tool - and then helpfully x contains the core tools
+    */
+  def coreRequirementSatisfied(person: Person, skillType: SkillType): (Boolean, Option[collection.Set[RichToolInfo]]) =
     // does the skill require a core item
     allToolInfo.core.get(skillType) match {
       // if it does then proceed, does the person have one of these?
-      case x@Some(xs) if xs.nonEmpty =>
+      case x @ Some(xs) if xs.nonEmpty =>
         person.tools.intersect(xs) match {
           case inBoth if inBoth.nonEmpty => (true, Option(inBoth))
-          case _ => (false, x)
+          case _                         => (false, x)
         }
 
       case _ => (true, None)
     }
-  }
 
   /**
-   * @return (true, x) if the person does not have a needed core tool then helpfully x contains any of those core tools which are available
-   */
-  def canMeetCoreRequirement(person: Person, skillType: SkillType, availableTools: collection.Set[RichToolInfo]): (Boolean, collection.Set[RichToolInfo]) = {
-
+    * @return (true, x) if the person does not have a needed core tool then helpfully x contains any of those core tools which are available
+    */
+  def canMeetCoreRequirement(person: Person,
+                             skillType: SkillType,
+                             availableTools: collection.Set[RichToolInfo]): (Boolean, collection.Set[RichToolInfo]) =
     coreRequirementSatisfied(person, skillType) match {
-      case (true,_) => (true, Set())
-      case (false, coreTools) =>
-        val tools = allToolInfo.core(skillType).toSet.intersect(availableTools)
-        if (tools.isEmpty) {
+      case (true, _) => (true, Set())
+      case (false, _) =>
+        val tools = allToolInfo.core(skillType).intersect(availableTools)
+        if (tools.isEmpty)
           (false, tools)
-        } else {
+        else
           (true, tools)
-        }
     }
-  }
 
   /**
-   * Gets the interchanges for a skill - there may be multiple sets that within themselves are interchangeable
-   * @param skillType
-   * @return
-   */
-  def getInterchanges(skillType: SkillType): List[Set[RichToolInfo]] = {
+    * Gets the interchanges for a skill - there may be multiple sets that within themselves are interchangeable
+    *
+    * @param skillType
+    * @return
+    */
+  def getInterchanges(skillType: SkillType): List[Set[RichToolInfo]] =
     allToolInfo.interchangeables filter
       (interchanges => interchanges.skills == None || interchanges.skills.get.contains(skillType)) map (_.set)
-  }
 
-  def bestBonus(tools: Traversable[RichToolInfo], skillType: SkillType) = {
+  def bestBonus(tools: Traversable[RichToolInfo], skillType: SkillType) =
     tools.max(RichToolInfo.orderingBySkillBonus(skillType))
-  }
 
   /**
-   * @return the total skill bonus that will be given to the person for the skillType
-   */
-  def getSkillBonus(person: Person, skillType: SkillType): Int = {
-
+    * @return the total skill bonus that will be given to the person for the skillType
+    */
+  def getSkillBonus(person: Person, skillType: SkillType): Int =
     if (!coreRequirementSatisfied(person, skillType)._1)
       0
     else {
       // negate the lesser interchangeables
       val toolsWithBonusForSkill = allToolInfo.bonuses(skillType).intersect(person.tools)
-      val bonuses = filterOutInterchangeablesChooseBest(toolsWithBonusForSkill, skillType)
+      val bonuses                = filterOutInterchangeablesChooseBest(toolsWithBonusForSkill, skillType)
       totalBonuses(bonuses, skillType)
     }
-  }
 
-  def totalBonuses(tools: GenTraversable[RichToolInfo], skillType: SkillType): Int = {
+  def totalBonuses(tools: GenTraversable[RichToolInfo], skillType: SkillType): Int =
     tools.foldLeft(0)((a: Int, c: RichToolInfo) => a + c.bonuses(skillType))
-  }
 
   /**
-   * Tries to assign the tool with the best bonus, from the unassigned supply, unless person already has the best available.
-   * @return true if assigned/ already had best tool
-   */
-  private def assignBestOutOf(itemContainer: ItemContainer, tools: Set[RichToolInfo], skillType: SkillType, person: Person): Boolean = {
+    * Tries to assign the tool with the best bonus, from the unassigned supply, unless person already has the best available.
+    *
+    * @return true if assigned/ already had best tool
+    */
+  private def assignBestOutOf(itemContainer: ItemContainer,
+                              tools: Set[RichToolInfo],
+                              skillType: SkillType,
+                              person: Person): Boolean = {
     val alreadyOwned = tools.intersect(person.tools)
 
     val sortedTools = tools.toList.sorted(RichToolInfo.orderingBySkillBonus(skillType).reverse)
@@ -133,8 +130,10 @@ case class ToolUtils(allToolInfo: Tools) {
 
       val allInters = interchanges.flatten
       // assign the rest
-      for (toolInfoOpt <- allToolInfo.bonuses.get(skillType);
-           toolInfo <- toolInfoOpt) {
+      for {
+        toolInfoOpt <- allToolInfo.bonuses.get(skillType)
+        toolInfo    <- toolInfoOpt
+      } {
         // skip the tools which are in the interchangeables
         if (!allInters.contains(toolInfo)) {
           itemContainer.assign(toolInfo, person)

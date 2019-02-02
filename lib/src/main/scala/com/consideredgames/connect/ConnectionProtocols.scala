@@ -19,7 +19,7 @@ class ConnectionProtocolsImpl(dispatcher: Dispatcher)(implicit val system: Actor
   implicit val timeout: akka.util.Timeout = 10.seconds
 
   private val connector: Connector = TypedActor(system).typedActorOf(
-    TypedProps(classOf[Connector], new ConnectorImpl("server-connector", system.settings.config, dispatcher)))
+    TypedProps(classOf[Connector], new ConnectorImpl(system.settings.config, dispatcher)()))
 
   def connect(request: ConnectRequest): Future[MessageSender] = request match {
     case r: Register => connector.open(r)

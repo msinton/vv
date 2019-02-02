@@ -9,9 +9,9 @@ import com.consideredgames.server.game.tasks._
 
 import scala.concurrent.ExecutionContext
 
-class LobbyActor(implicit val actorSystem: ActorSystem,
-                 implicit val actorMaterializer: ActorMaterializer,
-                 implicit val ec: ExecutionContext)
+case class LobbyActor(implicit val actorSystem: ActorSystem,
+                      implicit val actorMaterializer: ActorMaterializer,
+                      implicit val ec: ExecutionContext)
     extends Actor {
 
   private val stagedGames        = collection.mutable.LinkedHashMap[String, ActorRef]()

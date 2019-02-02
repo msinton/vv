@@ -2,13 +2,13 @@ package com.consideredgames.common
 
 import java.nio.file.{Files, Path, Paths}
 
-import org.scalatest.{BeforeAndAfterEach, FunSuite}
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
-class LoadAndSaveTest extends FunSuite with BeforeAndAfterEach {
+class LoadAndSaveTest extends FunSuite with BeforeAndAfter {
 
   val testFilename = "test-load-and-save"
 
-  override def afterEach() {
+  after {
     val path: Path = Paths.get(System.getProperty("user.home"), testFilename)
     Files.deleteIfExists(path)
   }

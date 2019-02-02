@@ -16,7 +16,7 @@ object LoadAndSave extends LazyLogging {
     * to a file specified by the path.
     * Creates the file if does not already exist, o/w appends to the file.
     */
-  def writeToCSV(path: Path, separator: String, values: Seq[String]) {
+  def writeToCSV(path: Path, separator: String, values: Seq[String]): Path = {
     val toWrite = values.mkString(separator).concat(System.lineSeparator())
     Files.write(path, toWrite.getBytes, StandardOpenOption.APPEND, StandardOpenOption.CREATE)
   }
@@ -30,7 +30,7 @@ object LoadAndSave extends LazyLogging {
     Source
       .fromFile(filename)
       .getLines()
-      .map(_.split(",").map(_.trim).toList)
+      .map(_.split(separator).map(_.trim).toList)
       .filterNot(_.forall(_.isEmpty))
       .toList
 

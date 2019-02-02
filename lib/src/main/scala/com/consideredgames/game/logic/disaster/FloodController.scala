@@ -5,34 +5,32 @@ import com.consideredgames.game.model.hex.{HexType, RiverNetwork, RiverSegment}
 import scala.util.Random
 
 class FloodController(riverNetwork: RiverNetwork, random: Random, roundsToFlood: Option[List[Int]]) {
-  private var floodPercent: Int = 10
+  private var floodPercent: Int          = 10
   private val roundsToFlood_ : List[Int] = roundsToFlood.getOrElse(List(2, 5, 8, 11, 13, 16, 18, 20, 21))
 
-  def setFloodPercent(floodPercent: Int) {
+  def setFloodPercent(floodPercent: Int): Unit =
     this.floodPercent = floodPercent
-  }
 
   /**
-   * Floods the land beside rivers if this is a flooding round.
-   */
-  def process(currentRound: Int) {
+    * Floods the land beside rivers if this is a flooding round.
+    */
+  def process(currentRound: Int): Unit =
     if (roundsToFlood_.contains(currentRound)) {
       flood()
     }
-  }
 
-  private def flood() {
+  private def flood(): Unit = {
 
-    def getHexOnSideOfRiverAtRandom(river: RiverSegment) = {
-      river.hexB.map { hexB =>
-        if (random.nextInt(2) == 1) {
-          river.hexA
+    def getHexOnSideOfRiverAtRandom(river: RiverSegment) =
+      river.hexB
+        .map { hexB =>
+          if (random.nextInt(2) == 1) {
+            river.hexA
+          } else {
+            hexB
+          }
         }
-        else {
-          hexB
-        }
-      }.getOrElse(river.hexA)
-    }
+        .getOrElse(river.hexA)
 
     for (river <- riverNetwork.rivers) {
       if (random.nextInt(100) <= floodPercent) {

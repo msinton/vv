@@ -5,24 +5,24 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.consideredgames.message.Messages.Message
 import com.consideredgames.serializers.JsonSupport
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Future
 
-object httpResponseParse extends JsonSupport {
+object httpResponseParse extends JsonSupport with LazyLogging {
 
-  def apply(response: HttpResponse)(implicit materializer: ActorMaterializer): Future[Message] = {
+  def apply(response: HttpResponse)(implicit materializer: ActorMaterializer): Future[Message] =
     response match {
       case HttpResponse(_: StatusCodes.Success, headers, entity: HttpEntity.Strict, _) =>
-        println("http res parser", entity, headers)
+        logger.debug("http res parser entity {} headers {}", entity, headers)
         Unmarshal(entity).to[Message]
 
       case HttpResponse(StatusCodes.ServiceUnavailable, headers, entity, _) =>
-        println("server down - try again later", entity, headers)
+        logger.debug("server down - try again later entity {} headers {}", entity, headers)
         Future failed ServiceUnavailableException("server down")
 
       case HttpResponse(status, headers, entity, _) =>
-        println("bad status", status, entity, headers)
+        logger.debug("bad status, status: {} entity: {} headers: {}", status, entity, headers)
         Future failed BadStatusException(status)
     }
-  }
 }

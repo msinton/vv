@@ -24,17 +24,16 @@ class GameService(implicit val actorSystem: ActorSystem,
 
   implicit val timeout: akka.util.Timeout = 10.seconds
 
-  private val lobbyWorker        = actorSystem.actorOf(Props(new LobbyActor()), "lobby-worker")
-  private val sessionWorker      = actorSystem.actorOf(Props(new SessionActor(lobbyWorker)), "session-worker")
-  private val registerSupervisor = actorSystem.actorOf(Props(new RegisterSupervisor()), "register-supervisor")
-  private val loginWorker        = actorSystem.actorOf(Props(new LoginActor()), "login-worker")
+  private val lobbyWorker        = actorSystem.actorOf(Props(LobbyActor()), "lobby-worker")
+  private val sessionWorker      = actorSystem.actorOf(Props(SessionActor(lobbyWorker)), "session-worker")
+  private val registerSupervisor = actorSystem.actorOf(Props(RegisterSupervisor()), "register-supervisor")
+  private val loginWorker        = actorSystem.actorOf(Props(LoginActor()), "login-worker")
 
-  private val websocketFlow = new WebsocketFlow(sessionWorker)
+  private val websocketFlow = WebsocketFlow(sessionWorker)
 
   private def defaultIpToUnknown(ip: RemoteAddress) = ip.toOption.map(_.getHostAddress).getOrElse("unknown")
 
   def registerRoute(register: Register, ip: String): Route = {
-
     val workerResponse = registerSupervisor ? MessageWithIp(register, ip)
     onSuccess(workerResponse) {
       case m: VVMessage => complete(m)
@@ -48,7 +47,7 @@ class GameService(implicit val actorSystem: ActorSystem,
     }
   }
 
-  def route: Route =
+  val route: Route =
     get {
       (pathSingleSlash & parameter("username") & parameter("sessionId") & extractClientIP) {
         (username, sessionId, ip) =>

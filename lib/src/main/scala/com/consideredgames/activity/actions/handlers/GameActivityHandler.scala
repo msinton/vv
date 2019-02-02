@@ -1,7 +1,7 @@
 package com.consideredgames.activity.actions.handlers
 
-import com.consideredgames.activity.StartGameException
 import com.consideredgames.activity.actions.StartGame
+import com.consideredgames.activity.exceptions.StartGameException
 import com.consideredgames.activity.state.Games
 import com.consideredgames.game.model.animals.AnimalInfo
 import com.consideredgames.game.model.game.{GameBuilder, GameData, NewGameConfig}

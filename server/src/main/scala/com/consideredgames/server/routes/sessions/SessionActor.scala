@@ -7,7 +7,7 @@ import com.consideredgames.server.game.tasks.RequestWithPlayer
 
 import scala.concurrent.ExecutionContext
 
-class SessionActor(lobbyWorker: ActorRef)(implicit val ec: ExecutionContext) extends Actor {
+case class SessionActor(lobbyWorker: ActorRef)(implicit val ec: ExecutionContext) extends Actor {
 
   private val active = collection.mutable.LinkedHashMap[String, ActorRef]()
 

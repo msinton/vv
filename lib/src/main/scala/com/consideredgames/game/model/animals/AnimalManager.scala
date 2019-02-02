@@ -6,8 +6,8 @@ import com.consideredgames.game.model.person.Person
 import scala.util.Random
 
 /**
- * Created by matt on 09/03/15.
- */
+  * Created by matt on 09/03/15.
+  */
 class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Person]) {
 
   import AnimalManager._
@@ -26,7 +26,7 @@ class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Pers
 
   def add(animal: Animal): Boolean = containers(animal.info).add(animal)
 
-  def levelUpCapacity() {
+  def levelUpCapacity() =
     for (container <- containers) {
       if (hexOrPerson.isLeft) {
         container._2.capacity += container._1.hexCapacity / 6
@@ -34,9 +34,8 @@ class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Pers
         container._2.capacity += container._1.personCapacity / 6
       }
     }
-  }
 
-  def resetToBaseCapacity() {
+  def resetToBaseCapacity() =
     for (container <- containers) {
       if (hexOrPerson.isLeft) {
         container._2.capacity = container._1.hexCapacity
@@ -44,33 +43,32 @@ class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Pers
         container._2.capacity = container._1.personCapacity
       }
     }
-  }
 
   def allocateAnimal(a: Animal, random: Random): Boolean = {
     val animalInfo = a.info
-    val container = containers(animalInfo)
+    val container  = containers(animalInfo)
 
-    def allocateForHex(hex: Hex): Boolean = {
+    def allocateForHex(hex: Hex): Boolean =
       // add if room
       if (!container.isFull) add(a)
       else { // animal attempts to move to a random neighbour hex, dies if that hex is already full.
-      //TODO only traversable by foot neighbours
-      var neighbours = hex.neighbours.values.toIndexedSeq
-        var i = 0
+        //TODO only traversable by foot neighbours
+        var neighbours = hex.neighbours.values.toIndexedSeq
+        var i          = 0
 
         if (neighbours.nonEmpty) {
 
           i = random.nextInt(neighbours.size)
           val tempHex = neighbours(i)
-          neighbours = neighbours.filter { h => h == tempHex}
+          neighbours = neighbours.filter { h =>
+            h == tempHex
+          }
 
           // if neighbour is full then the animal dies (disappears/was never born)!
           addAnimalTo(tempHex, a, animalInfos)
-        }
-        else
+        } else
           false
       }
-    }
 
     // this is a manager for a person
     def allocateForPerson(person: Person): Boolean = {
@@ -78,17 +76,18 @@ class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Pers
       if (container.isFull) {
 
         // only hex type water applies and if not on a hex then give up!
-        return (person.hex filter (_.hexType != HexType.WATER)).exists(createAnimalManagerIfNeeded(_, animalInfos).allocateAnimal(a, random))
+        return (person.hex filter (_.hexType != HexType.WATER))
+          .exists(createAnimalManagerIfNeeded(_, animalInfos).allocateAnimal(a, random))
       }
       container.add(a)
     }
 
-    hexOrPerson.fold( allocateForHex, allocateForPerson)
+    hexOrPerson.fold(allocateForHex, allocateForPerson)
   }
 
   /**
-   * @return the number of animals killed
-   */
+    * @return the number of animals killed
+    */
   def killAnimalsThatExceedCapacity(random: Random) = {
 
     var killed = 0
@@ -112,34 +111,33 @@ class AnimalManager(animalInfos: List[AnimalInfo], hexOrPerson: Either[Hex, Pers
   }
 
   /**
-   * Impregnates then progresses pregnancy, so animals with term 1 or less give birth immediately.
-   */
+    * Impregnates then progresses pregnancy, so animals with term 1 or less give birth immediately.
+    */
   def progressPregnancies(random: Random) = {
     PregnancyManager.tryImpregnateAll(this, random)
     PregnancyManager.progressPregnancy(this, random)
   }
 }
 
-
 object AnimalManager {
 
-  def addAnimalTo(hex: Hex, animal: Animal, animalInfos: List[AnimalInfo]) = createAnimalManagerIfNeeded(hex, animalInfos).add(animal)
+  def addAnimalTo(hex: Hex, animal: Animal, animalInfos: List[AnimalInfo]) =
+    createAnimalManagerIfNeeded(hex, animalInfos).add(animal)
 
-  def createAnimalManagerIfNeeded(hex: Hex, animalInfos: List[AnimalInfo]): AnimalManager = {
+  def createAnimalManagerIfNeeded(hex: Hex, animalInfos: List[AnimalInfo]): AnimalManager =
     hex.animalManager getOrElse {
       val animalMan = new AnimalManager(animalInfos, Left(hex))
       hex.animalManager = Option(animalMan)
       animalMan
     }
-  }
 
-  def addAnimalTo(person: Person, animal: Animal, animalInfos: List[AnimalInfo]) = createAnimalManagerIfNeeded(person, animalInfos).add(animal)
+  def addAnimalTo(person: Person, animal: Animal, animalInfos: List[AnimalInfo]) =
+    createAnimalManagerIfNeeded(person, animalInfos).add(animal)
 
-  def createAnimalManagerIfNeeded(person: Person,  animalInfos: List[AnimalInfo]) = {
+  def createAnimalManagerIfNeeded(person: Person, animalInfos: List[AnimalInfo]) =
     person.animalManager getOrElse {
       val animalMan = new AnimalManager(animalInfos, Right(person))
       person.animalManager = Option(animalMan)
       animalMan
     }
-  }
 }

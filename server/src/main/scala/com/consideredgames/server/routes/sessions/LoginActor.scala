@@ -9,7 +9,7 @@ import com.consideredgames.server.routes.tasks.MessageWithIp
 
 import scala.concurrent.ExecutionContext
 
-class LoginActor(implicit val executionContext: ExecutionContext) extends Actor {
+case class LoginActor(implicit val executionContext: ExecutionContext) extends Actor {
 
   private def handleIsAuthenticated(username: String, ip: String) = {
     val sessionId = SessionUtils.prepareSession(username, ip)
@@ -24,7 +24,6 @@ class LoginActor(implicit val executionContext: ExecutionContext) extends Actor 
     }
 
   override def receive: Receive = {
-
     case MessageWithIp(Login(username, passwordHash, email), ip) =>
       authenticateUserAndResponse(username, passwordHash, email, ip) pipeTo sender()
 

@@ -13,30 +13,36 @@ import org.json4s.native.Serialization
 import org.json4s.native.Serialization._
 import org.json4s.{CustomKeySerializer, MappingException, ShortTypeHints}
 
-
 class GameMessageMapper(val animalInfos: List[AnimalInfo], val tools: Tools) {
 
-  val playerColourStrings: Set[String] = PlayerColours.playerColoursSet map {_.name}
+  val playerColourStrings: Set[String] = PlayerColours.playerColoursSet map { _.name }
 
-  object playerColourCustomKeySerializer extends CustomKeySerializer[PlayerColour](
-    format => ( {
-      case str: String if playerColourStrings.contains(str) =>
-        PlayerColours.playerColoursSet.find(_.name == str).getOrElse(throw new MappingException(s"Can't convert $str to a player colour"))
-    }, {
-      case x: PlayerColour => x.name
-    })
-  )
+  object playerColourCustomKeySerializer
+      extends CustomKeySerializer[PlayerColour](
+        _ =>
+          ({
+            case str: String if playerColourStrings.contains(str) =>
+              PlayerColours.playerColoursSet
+                .find(_.name == str)
+                .getOrElse(throw new MappingException(s"Can't convert $str to a player colour"))
+          }, {
+            case x: PlayerColour => x.name
+          })
+      )
 
-  object assignedToolsCustomKeySerializer extends CustomKeySerializer[(RichToolInfo, Int)](
-    format => ( {
-      case str: String if tools.toolsByName.get(str.split("-").head).nonEmpty =>
-        val splits = str.split("-")
-        val tool = tools.toolsByName.getOrElse(splits.head, throw new MappingException(s"Can't convert $str to a assignedToolKey"))
-        (tool, splits(1).toInt)
-    }, {
-      case (t: RichToolInfo, n: Int) => t.name + "-" + n
-    })
-  )
+  object assignedToolsCustomKeySerializer
+      extends CustomKeySerializer[(RichToolInfo, Int)](
+        _ =>
+          ({
+            case str: String if tools.toolsByName.get(str.split("-").head).nonEmpty =>
+              val splits = str.split("-")
+              val tool = tools.toolsByName
+                .getOrElse(splits.head, throw new MappingException(s"Can't convert $str to a assignedToolKey"))
+              (tool, splits(1).toInt)
+          }, {
+            case (t: RichToolInfo, n: Int) => t.name + "-" + n
+          })
+      )
 
   implicit val formats = Serialization.formats(ShortTypeHints(GameMessage.classes ::: ActionResults.classes)) +
     Skills.serializer +

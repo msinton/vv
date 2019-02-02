@@ -11,8 +11,8 @@ import scala.util.Try
 
 object Boot extends App with LazyLogging {
 
-  implicit val system       = ActorSystem("vv-server")
-  implicit val materializer = ActorMaterializer()
+  implicit val system: ActorSystem             = ActorSystem("vv-server")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
   val config = system.settings.config
@@ -28,9 +28,9 @@ object Boot extends App with LazyLogging {
   Try {
     for {
       _ <- Indexes.initialise().failed.map(Indexes.handleFailure(shutdownHook))
-      server   = new GameService()
-      bindingF = Http().bindAndHandle(server.route, host, port)
-      _        = bindingF.failed.map(Binding.handleFailure(shutdownHook))
+      gameService = new GameService()
+      bindingF    = Http().bindAndHandle(gameService.route, host, port)
+      _           = bindingF.failed.map(Binding.handleFailure(shutdownHook))
       binding <- bindingF
       _ = Binding.logStatus(binding)
     } yield logger.info("----------------- Service started -----------------")

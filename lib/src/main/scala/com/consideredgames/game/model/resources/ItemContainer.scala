@@ -8,56 +8,53 @@ import scala.collection._
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Created by matt on 09/03/15.
- */
+  * Created by matt on 09/03/15.
+  */
 case class ItemContainer(toolUtils: ToolUtils) {
-
-  import scala.collection.JavaConversions._
 
   private val resources_ = ArrayBuffer.empty[ResourceGroup]
 
-  private val tools_ : collection.mutable.Map[RichToolInfo, ArrayBuffer[Tool]] = new java.util.TreeMap[RichToolInfo, ArrayBuffer[Tool]]()
+  private val tools_ : collection.mutable.Map[RichToolInfo, ArrayBuffer[Tool]] =
+    mutable.TreeMap.empty[RichToolInfo, ArrayBuffer[Tool]]
 
   private val assignedTools_ = new mutable.AnyRefMap[(RichToolInfo, Int), Tool]()
 
-  private val toolsAssignedAsConstructionMaterial : collection.mutable.Map[RichToolInfo, ArrayBuffer[Tool]] = new java.util.TreeMap[RichToolInfo, ArrayBuffer[Tool]]()
+  private val toolsAssignedAsConstructionMaterial: collection.mutable.Map[RichToolInfo, ArrayBuffer[Tool]] =
+    mutable.TreeMap.empty[RichToolInfo, ArrayBuffer[Tool]]
 
   private val assignedResources = ArrayBuffer.empty[ResourceGroup]
 
-  private def add(r: ResourceGroup, buffer: collection.mutable.Buffer[ResourceGroup]): Unit = {
-
-    buffer.indexWhere( _.canMerge(r)) match {
+  private def add(r: ResourceGroup, buffer: collection.mutable.Buffer[ResourceGroup]): Unit =
+    buffer.indexWhere(_.canMerge(r)) match {
       case -1 => buffer += r
-      case n => buffer.update(n, buffer(n).merge(r).get)
+      case n  => buffer.update(n, buffer(n).merge(r).get)
     }
-  }
 
   def add(r: ResourceGroup): Unit = add(r, resources_)
 
-  def add(richToolInfo: RichToolInfo, tool: Tool): Unit = tools_.getOrElseUpdate(richToolInfo, ArrayBuffer()) += tool
+  def add(richToolInfo: RichToolInfo, tool: Tool): ArrayBuffer[Tool] =
+    tools_.getOrElseUpdate(richToolInfo, ArrayBuffer()) += tool
 
   def consume(resource: Resource, number: Int): Boolean = consume(resource, number, resources_)
 
   /**
-   * Consumes resources from the supplied buffer if there are enough.
-   * @return false if number of resources in buffer < "number"
-   */
-  private def consume(resource: Resource, number: Int, buffer: collection.mutable.Buffer[ResourceGroup]): Boolean = {
-    buffer.find( _.r == resource) exists {
+    * Consumes resources from the supplied buffer if there are enough.
+    *
+    * @return false if number of resources in buffer < "number"
+    */
+  private def consume(resource: Resource, number: Int, buffer: collection.mutable.Buffer[ResourceGroup]): Boolean =
+    buffer.find(_.r == resource) exists { res =>
+      res.n - number match {
+        case x if x >= 0 =>
+          buffer -= res
+          buffer += ResourceGroup(res.r, x)
+          true
 
-      res =>
-        res.n - number match {
-          case x if x >= 0 =>
-            buffer -= res
-            buffer += ResourceGroup(res.r, x)
-            true
-
-          case y if y < 0 => false
-        }
+        case y if y < 0 => false
+      }
     }
-  }
 
-  def consume(richToolInfo: RichToolInfo, person: Person): Boolean = {
+  def consume(richToolInfo: RichToolInfo, person: Person): Boolean =
     assignedTools_.get((richToolInfo, person.id)).exists { t =>
       val newLife = t.life - 1
       if (newLife > 0) {
@@ -67,22 +64,22 @@ case class ItemContainer(toolUtils: ToolUtils) {
       }
       true
     }
-  }
 
-  def take(richToolInfo: RichToolInfo, tool: Tool): Option[Tool] = {
+  def take(richToolInfo: RichToolInfo, tool: Tool): Option[Tool] =
     tools_.get(richToolInfo) match {
       case None => None
       case Some(xs) =>
         xs.indexWhere(_ == tool) match {
-          case -1 => None
+          case -1    => None
           case index => Option(xs.remove(index))
         }
     }
-  }
 
-  private def assign(resourceGroup: ResourceGroup, from: collection.mutable.Buffer[ResourceGroup], to: collection.mutable.Buffer[ResourceGroup]) = {
+  private def assign(resourceGroup: ResourceGroup,
+                     from: collection.mutable.Buffer[ResourceGroup],
+                     to: collection.mutable.Buffer[ResourceGroup]) =
     from.indexWhere(_.canMerge(resourceGroup)) match {
-      case -1 => false
+      case -1                                => false
       case x if resourceGroup.n <= from(x).n =>
         // assign the resources to "to" buffer
         add(resourceGroup, to)
@@ -91,31 +88,30 @@ case class ItemContainer(toolUtils: ToolUtils) {
         true
       case _ => false
     }
-  }
 
   def assign(resourceGroup: ResourceGroup): Boolean = assign(resourceGroup, resources_, assignedResources)
 
   def unassign(resourceGroup: ResourceGroup): Boolean = assign(resourceGroup, assignedResources, resources_)
 
   /**
-   * tries to assign all the res groups, and if fails to do so, rolls back the attempt.
-   */
+    * tries to assign all the res groups, and if fails to do so, rolls back the attempt.
+    */
   def assign(resourceGroups: List[ResourceGroup]): Boolean = {
 
-    var resourceGroups_ = resourceGroups
-    var canAssignAll = true
-    var allAssigned = false
+    var resourceGroups_               = resourceGroups
+    var canAssignAll                  = true
+    var allAssigned                   = false
     var assigned: List[ResourceGroup] = Nil
 
-    while(!allAssigned && canAssignAll) {
+    while (!allAssigned && canAssignAll) {
       resourceGroups_ match {
 
         case Nil => allAssigned = true
-          
+
         case x :: xs if assign(x) =>
           resourceGroups_ = xs
           assigned = x :: assigned
-          
+
         case _ =>
           canAssignAll = false
           assigned.foreach(unassign)
@@ -125,10 +121,11 @@ case class ItemContainer(toolUtils: ToolUtils) {
   }
 
   /**
-   * Assigns the first matching tool of the specified type to the person
-   * If the person already has a tool of that type assigned then <b>don't</b> swap it.
-   * @return true if success, or already had the tool of that type.
-   */
+    * Assigns the first matching tool of the specified type to the person
+    * If the person already has a tool of that type assigned then <b>don't</b> swap it.
+    *
+    * @return true if success, or already had the tool of that type.
+    */
   def assign(toolInfo: RichToolInfo, person: Person): Boolean = {
 
     if (person.tools.contains(toolInfo)) return true
@@ -143,38 +140,38 @@ case class ItemContainer(toolUtils: ToolUtils) {
     }
   }
 
-  def unassign(toolInfo: RichToolInfo, person: Person): Option[Tool] = {
-    assignedTools_.remove(toolInfo, person.id) match {
-      case x@Some(tool) => person.tools -= toolInfo
+  def unassign(toolInfo: RichToolInfo, person: Person): Option[Tool] =
+    assignedTools_
+      .remove((toolInfo, person.id))
+      .map { x =>
+        person.tools -= toolInfo
         x
-      case _ => None
-    }
-  }
+      }
 
   def assignForConstruction(tools: Map[RichToolInfo, Int]): Boolean = {
 
-    def assign(toolInfo: RichToolInfo, tool: Tool): Unit = {
+    def assign(toolInfo: RichToolInfo, tool: Tool): ArrayBuffer[Tool] = {
       tools_(toolInfo) -= tool
       toolsAssignedAsConstructionMaterial.getOrElseUpdate(toolInfo, ArrayBuffer()) += tool
     }
 
-    def unassign(toolWithInfo: (RichToolInfo, Tool)): Unit = {
+    def unassign(toolWithInfo: (RichToolInfo, Tool)): ArrayBuffer[Tool] = {
       toolsAssignedAsConstructionMaterial(toolWithInfo._1) -= toolWithInfo._2
       tools_(toolWithInfo._1) += toolWithInfo._2
     }
 
-    var toolsToAssign = tools.toList
+    var toolsToAssign                        = tools.toList
     var assigned: List[(RichToolInfo, Tool)] = Nil
-    var allAssigned = false
-    var canAssignAll = true
+    var allAssigned                          = false
+    var canAssignAll                         = true
 
     while (!allAssigned && canAssignAll) {
       toolsToAssign match {
 
         case Nil => allAssigned = true
-        case (tool, n) :: xs if tools_.exists {case(t,buff) => t == tool && buff.size >= n} =>
-          for (i <- 1 to n) {
-            val taken = tools_(tool).sortBy(_.life).head
+        case (tool, n) :: xs if tools_.exists { case (t, buff) => t == tool && buff.size >= n } =>
+          for (_ <- 1 to n) {
+            val taken = tools_(tool).minBy(_.life)
             assign(tool, taken)
             toolsToAssign = xs
             assigned = (tool, taken) :: assigned
@@ -188,22 +185,19 @@ case class ItemContainer(toolUtils: ToolUtils) {
     allAssigned
   }
 
-  def unassignForConstruction(tools: Map[RichToolInfo, Int]): Unit = {
-
-    tools.foreach { case (toolInfo, n) =>
-      for (i <- 1 to n)
-        toolsAssignedAsConstructionMaterial.get(toolInfo).collect {
-          case toolBuffer if toolBuffer.nonEmpty =>
-            tools_.getOrElseUpdate(toolInfo, ArrayBuffer()) += toolBuffer.head
-            toolBuffer -= toolBuffer.head
-        }
+  def unassignForConstruction(tools: Map[RichToolInfo, Int]): Unit =
+    tools.foreach {
+      case (toolInfo, n) =>
+        for (_ <- 1 to n)
+          toolsAssignedAsConstructionMaterial.get(toolInfo).collect {
+            case toolBuffer if toolBuffer.nonEmpty =>
+              tools_.getOrElseUpdate(toolInfo, ArrayBuffer()) += toolBuffer.head
+              toolBuffer -= toolBuffer.head
+          }
     }
-  }
 
-  def availableTools(toolsToFind: Traversable[RichToolInfo]) = {
-
-    tools_.filter {case (toolInfo, buffer) => buffer.nonEmpty && toolsToFind.exists(_ == toolInfo)}.keySet
-  }
+  def availableTools(toolsToFind: Traversable[RichToolInfo]): Set[RichToolInfo] =
+    tools_.filter { case (toolInfo, buffer) => buffer.nonEmpty && toolsToFind.exists(_ == toolInfo) }.keySet
 
   def resources: Seq[ResourceGroup] = resources_
 

@@ -18,8 +18,8 @@ trait Connector {
   def open(r: Login): Future[MessageSender]
 }
 
-class ConnectorImpl(name: String, config: Config, dispatch: Dispatcher)(implicit val system: ActorSystem,
-                                                                        implicit val materializer: ActorMaterializer)
+class ConnectorImpl(config: Config, dispatch: Dispatcher)(implicit val system: ActorSystem,
+                                                          implicit val materializer: ActorMaterializer)
     extends Connector {
 
   import akka.actor.TypedActor.dispatcher
@@ -32,18 +32,18 @@ class ConnectorImpl(name: String, config: Config, dispatch: Dispatcher)(implicit
     case err: ConnectResponseError                    => Try(throw BadResponseException(err))
   }
 
-  private def open(json: String, path: String): Future[MessageSender] =
+  override def open(r: Register): Future[MessageSender] =
+    openJson(MessageMapper.toJson(r), "register")
+
+  override def open(r: Login): Future[MessageSender] =
+    openJson(MessageMapper.toJson(r), "login")
+
+  private def openJson(json: String, path: String): Future[MessageSender] =
     for {
       response <- formatFailedHttp(HttpMethods.post(config, json, path))
       parsed   <- httpResponseParse(response)
       sender   <- Future.fromTry(toSocketMessageSender(parsed))
     } yield sender
-
-  override def open(r: Register): Future[MessageSender] =
-    open(MessageMapper.toJson(r), "register")
-
-  override def open(r: Login): Future[MessageSender] =
-    open(MessageMapper.toJson(r), "login")
 
   private def formatFailedHttp(f: Future[HttpResponse]) =
     f.transform(s => s, f => ServiceUnavailableException("no connection", f))

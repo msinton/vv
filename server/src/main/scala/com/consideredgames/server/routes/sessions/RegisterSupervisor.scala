@@ -6,11 +6,11 @@ import com.consideredgames.server.routes.tasks.MessageWithIp
 
 import scala.concurrent.ExecutionContext
 
-class RegisterSupervisor(implicit val executionContext: ExecutionContext) extends Actor {
+case class RegisterSupervisor(implicit val executionContext: ExecutionContext) extends Actor {
 
   var router: Router = {
     val routees = Vector.fill(10) {
-      val worker = context.actorOf(Props(new RegisterActor()))
+      val worker = context.actorOf(Props(RegisterActor()))
       context watch worker
       ActorRefRoutee(worker)
     }
@@ -23,7 +23,7 @@ class RegisterSupervisor(implicit val executionContext: ExecutionContext) extend
     case Terminated(a) =>
       println("TERMINATED: register actor terminated!")
       router = router.removeRoutee(a)
-      val worker = context.actorOf(Props(new RegisterActor()))
+      val worker = context.actorOf(Props(RegisterActor()))
       context watch worker
       router = router.addRoutee(worker)
   }

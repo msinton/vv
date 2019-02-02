@@ -11,7 +11,7 @@ import com.mongodb.MongoWriteException
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-class RegisterActor(implicit val executionContext: ExecutionContext) extends Actor {
+case class RegisterActor(implicit val executionContext: ExecutionContext) extends Actor {
 
   private val usernameMaxLength = 20
   private val usernameTaken     = "E11000 duplicate key error collection: vv.users index: username_1"
