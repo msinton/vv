@@ -69,6 +69,7 @@ case class DeploymentProcessor(boardUtils: BoardUtils) {
     boat.addPerson(person)
     person.boat = Option(boat)
     boardUtils.boardData.add(boat)
+    ()
   }
 
   def deploy(boats: List[Boat]): Unit =
@@ -80,8 +81,10 @@ case class DeploymentProcessor(boardUtils: BoardUtils) {
       }
     }
 
-  def deploy(boat: Boat): Unit =
+  def deploy(boat: Boat): Unit = {
     boardUtils.boardData.add(boat)
+    ()
+  }
 
   def valid(people: List[NewPersonInstruction], playerWithPeople: PlayerWithPeople): (Boolean, List[Boolean]) = {
     val results = people.map { instr =>
@@ -101,8 +104,8 @@ case class DeploymentProcessor(boardUtils: BoardUtils) {
     (results.forall(_ == true), results)
   }
 
-  def validDeploy(deployedPeople: List[DeployedPerson],
-                  playerWithPeople: PlayerWithPeople): (Boolean, List[Boolean]) = {
+  def validDeploy(deployedPeople: List[DeployedPerson], //                  playerWithPeople: PlayerWithPeople
+  ): (Boolean, List[Boolean]) = {
     val results = deployedPeople.map { deployedPerson =>
       deployedPerson.location match {
         case HexLocation(h) => boardUtils.mapToGameElement(h).exists(valid(deployedPerson.person, _))
@@ -127,7 +130,7 @@ case class DeploymentProcessor(boardUtils: BoardUtils) {
 
   def valid(person: Person, hex: Hex) =
     hex.person.isEmpty && hex.neighbours.exists {
-      case (side, h) => h.person.exists(_.playerColour == person.playerColour)
+      case (_, h) => h.person.exists(_.playerColour == person.playerColour)
     }
 
   def valid(person: Person, hex: Hex, side: Side) =

@@ -11,22 +11,22 @@ case class Point(id: Int) {
   val hexes: collection.Map[Vertex, Hex] = new java.util.EnumMap[Vertex, Hex](classOf[Vertex])
 
   /**
-   * A point can only have 3 hexes.
-   * Once a hex has been added to a point this restricts the remaining positions to a set of 3(actually remaining 2) vertices.
-   *
-   * Performs checks to ensure the (vertex,hex) being added is valid - given that there are two possible configurations
-   * for a point (SW,E,NW) or (SE,W,NE)
-   */
-  def setOneOfThreeHexes(vertex: Vertex, hex: Hex): Unit = {
+    * A point can only have 3 hexes.
+    * Once a hex has been added to a point this restricts the remaining positions to a set of 3(actually remaining 2) vertices.
+    *
+    * Performs checks to ensure the (vertex,hex) being added is valid - given that there are two possible configurations
+    * for a point (SW,E,NW) or (SE,W,NE)
+    */
+  def setOneOfThreeHexes(vertex: Vertex, hex: Hex): Unit =
     if (hexes.size < 3) {
       if (!hexes.containsKey(vertex) && (hexes.isEmpty
-        || (Vertex.verticesSet_1.containsAll(hexes.keys) && Vertex.verticesSet_1.contains(vertex))
-        || (Vertex.verticesSet_2.containsAll(hexes.keys) && Vertex.verticesSet_2.contains(vertex)))) {
+          || (Vertex.verticesSet_1.containsAll(hexes.keys) && Vertex.verticesSet_1.contains(vertex))
+          || (Vertex.verticesSet_2.containsAll(hexes.keys) && Vertex.verticesSet_2.contains(vertex)))) {
 
         hexes.put(vertex, hex)
+        ()
       }
     }
-  }
 
   def getRivers = {
     var rivers = Set[RiverSegment]()
@@ -42,20 +42,24 @@ case class Point(id: Int) {
   }
 
   /**
-   * @return The rivers which flow <b>to</b> this point
-   */
-  def riversFlowingTo() = getRivers.filter { river => river.flow.exists(_.to == this) }
+    * @return The rivers which flow <b>to</b> this point
+    */
+  def riversFlowingTo() = getRivers.filter { river =>
+    river.flow.exists(_.to == this)
+  }
 
   /**
-   * @return The rivers which flow out <b>from</b> this point.
-   */
-  def riversFlowingFrom() = getRivers.filter { river => river.flow.exists(_.from == this) }
+    * @return The rivers which flow out <b>from</b> this point.
+    */
+  def riversFlowingFrom() = getRivers.filter { river =>
+    river.flow.exists(_.from == this)
+  }
 
   def divertPossible() = riversFlowingTo().size == 1 && riversFlowingFrom().size == 1
 
   def getVertexWithRespectToHex(hex: Hex): Option[Vertex] = hexes.find(e => e._2 == hex) map (_._1)
 
-  private final def getDirection(hex: Hex, side: Side): Option[Direction] = {
+  private final def getDirection(hex: Hex, side: Side): Option[Direction] =
     if (hexes.containsValue(hex)) {
       if (getVertexWithRespectToHex(hex).exists(_.getClockwiseSide == side)) {
         Option(Direction.CLOCKWISE)
@@ -67,16 +71,13 @@ case class Point(id: Int) {
     } else {
       None
     }
-  }
 
-
-  final def createNewBranch(hex: Hex, direction: Direction, limit: Int, riverNetwork: RiverNetwork): Unit = {
-
+  final def createNewBranch(hex: Hex, direction: Direction, limit: Int, riverNetwork: RiverNetwork): Unit =
     if (limit - 1 > 0) {
 
-      var side: Option[Side] = None
+      var side: Option[Side]         = None
       var nextVertex: Option[Vertex] = None
-      var nextSide: Option[Side] = None
+      var nextSide: Option[Side]     = None
 
       val vertex = getVertexWithRespectToHex(hex)
       if (direction == Direction.ANTICLOCKWISE) {
@@ -92,15 +93,14 @@ case class Point(id: Int) {
       if (!side.exists(hex.rivers.contains)) {
         val nextPoint = nextVertex flatMap hex.vertices.get
 
-        nextPoint foreach {
-          p => {
+        nextPoint foreach { p =>
+          {
             riverNetwork.addRiver(hex, side.get).foreach(_.setFlow(this, p))
             if (p.riversFlowingFrom().isEmpty) p.createNewBranch(hex, direction, limit - 1, riverNetwork)
           }
         }
       }
     }
-  }
 
   @tailrec
   final def deleteBranch(riverNetwork: RiverNetwork): Unit = {
@@ -119,7 +119,7 @@ case class Point(id: Int) {
     val fromRivers = riversFlowingFrom()
     if (divertPossible()) {
       val fromRiver = fromRivers.head
-      val sideHex = getFreeSideHex(random).get
+      val sideHex   = getFreeSideHex(random).get
 
       createNewBranch(sideHex._2, getDirection(sideHex._2, sideHex._1).get, 5, riverNetwork)
 

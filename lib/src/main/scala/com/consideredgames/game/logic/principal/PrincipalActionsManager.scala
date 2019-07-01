@@ -5,19 +5,20 @@ import com.consideredgames.game.model.info.person.skill.Skills
 import com.consideredgames.game.model.info.person.skill.Skills.SkillType
 import com.consideredgames.game.model.person.Person
 import com.consideredgames.game.model.person.tools.{RichToolInfo, ToolUtils}
+import com.consideredgames.game.model.player.FullPlayer
 import com.consideredgames.game.model.resources.ItemContainer
 import com.consideredgames.game.model.round.principal._
-import com.consideredgames.game.model.player.FullPlayer
 
 /**
- * Created by matt on 16/03/15.
- */
-case class PrincipalActionsManager(private var continuedActions: List[ActionFulfillment] = Nil, var actionPoints_ : Int = 5) {
+  * Created by matt on 16/03/15.
+  */
+case class PrincipalActionsManager(private var continuedActions: List[ActionFulfillment] = Nil,
+                                   var actionPoints_ : Int = 5) {
 
   private var actions_ : List[ActionFulfillment] = List()
 
   private var peopleDoingThings: List[Person] = continuedActions.foldLeft(List[Person]()) {
-    case (acc, ActionFulfillment(_, PersonActionParameter(p))) => p :: acc
+    case (acc, ActionFulfillment(_, PersonActionParameter(p)))         => p :: acc
     case (acc, ActionFulfillment(_, TwoPersonActionParameter(p1, p2))) => p1 :: p2 :: acc
   }
 
@@ -27,13 +28,11 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
 
   def actions = actions_
 
-  def process(player: FullPlayer) = {
-
+  def process(player: FullPlayer) =
     for (action <- continuedActions :: actions_) {
 
       action match {
         case ActionFulfillment(actio: PersonAction with SkillLevelProvider, PersonActionParameter(p)) =>
-
           if (actio.isPossible(p)) {
             degradeUsedTools(p, actio.skill, actio.toolUtils, player.itemContainer)
 
@@ -45,9 +44,9 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
       }
 
     }
-  }
 
-  def addAction(action: Action, point: Point): Unit = if (addAction(action, PointActionParameter(point))) divertionPoints = point :: divertionPoints
+  def addAction(action: Action, point: Point): Unit =
+    if (addAction(action, PointActionParameter(point))) divertionPoints = point :: divertionPoints
 
   def addAction(action: Action, person: Person): Unit =
     if (addAction(action, PersonActionParameter(person))) peopleDoingThings = person :: peopleDoingThings
@@ -55,10 +54,12 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
   def addAction(action: Action, p1: Person, p2: Person): Unit =
     if (addAction(action, TwoPersonActionParameter(p1, p2))) peopleDoingThings = p1 :: p2 :: peopleDoingThings
 
-  def addAction(action: Action): Unit = addAction(action, EmptyActionParameter())
+  def addAction(action: Action): Unit = {
+    addAction(action, EmptyActionParameter())
+    ()
+  }
 
-  private def addAction(action: Action, actionParameter: ActionParameter): Boolean = {
-
+  private def addAction(action: Action, actionParameter: ActionParameter): Boolean =
     if (actionPoints_ > 0) {
       actionParameter match {
         case PersonActionParameter(p) if peopleDoingThings.contains(p) => removeAction(p)
@@ -66,7 +67,7 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
           if (peopleDoingThings.contains(p1)) removeAction(p1)
           if (peopleDoingThings.contains(p2)) removeAction(p2)
         case PointActionParameter(point) if divertionPoints.contains(point) => return false
-        case _ => // do nothing todo - is this correct?
+        case _                                                              => // do nothing todo - is this correct?
       }
       actions_ = ActionFulfillment(action, actionParameter) :: actions_
       actionPoints_ -= 1
@@ -74,42 +75,43 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
     } else {
       false
     }
-  }
 
   def removeAction(person: Person): Unit = {
     actions_ = actions_.filterNot {
-      case ActionFulfillment(a, PersonActionParameter(p)) if p == person =>
+      case ActionFulfillment(_, PersonActionParameter(p)) if p == person =>
         peopleDoingThings = peopleDoingThings.filterNot(_ == p)
         actionPoints_ += 1
         true
-      case ActionFulfillment(a, TwoPersonActionParameter(p1, p2)) if p1 == person || p2 == person =>
+      case ActionFulfillment(_, TwoPersonActionParameter(p1, p2)) if p1 == person || p2 == person =>
         peopleDoingThings = peopleDoingThings.filterNot(p => p == p1 || p == p2)
         actionPoints_ += 1
         true
     }
 
     continuedActions = continuedActions.filterNot {
-      case ActionFulfillment(a, PersonActionParameter(p)) if p == person =>
+      case ActionFulfillment(_, PersonActionParameter(p)) if p == person =>
         peopleDoingThings = peopleDoingThings.filterNot(_ == p)
         true
-      case ActionFulfillment(a, TwoPersonActionParameter(p1, p2)) if p1 == person || p2 == person =>
+      case ActionFulfillment(_, TwoPersonActionParameter(p1, p2)) if p1 == person || p2 == person =>
         peopleDoingThings = peopleDoingThings.filterNot(p => p == p1 || p == p2)
         true
     }
   }
 
-  def removeAction(point: Point): Unit = {
+  def removeAction(point: Point): Unit =
     actions_ = actions_.filterNot {
       case ActionFulfillment(_, PointActionParameter(p)) if p == point =>
         divertionPoints = divertionPoints.filterNot(_ == point)
         actionPoints_ += 1
         true
     }
-  }
 
   // must not degrade more tools than were needed to max out the skill
   //TODO need to skip tools that would give no net benefit!
-  private def degradeUsedTools(person: Person, skillType: SkillType, toolUtils: ToolUtils, itemContainer: ItemContainer): Unit = {
+  private def degradeUsedTools(person: Person,
+                               skillType: SkillType,
+                               toolUtils: ToolUtils,
+                               itemContainer: ItemContainer): Unit = {
 
     def getToolsToSkip: Set[RichToolInfo] = {
       //TODO toolBonus + skillLevel in another class totalLevel(person, skillType) -depends on ToolUtils and SkillUtils
@@ -129,8 +131,8 @@ case class PrincipalActionsManager(private var continuedActions: List[ActionFulf
 
           var bestMatch = (0, List[RichToolInfo]())
           for (combo <- candidatesList.combinations(bonusExcess)) {
-            var total = 0
-            val comboItr = combo.iterator
+            var total                     = 0
+            val comboItr                  = combo.iterator
             var tools: List[RichToolInfo] = List()
             while (total < bonusExcess && comboItr.hasNext) {
               val t = comboItr.next()

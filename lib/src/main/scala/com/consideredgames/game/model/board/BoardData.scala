@@ -71,6 +71,7 @@ class BoardData(numberOfPlayers: Int, val random: Random, animalInfos: List[Anim
       initialiseColumnEnd(totalColumns - 1, totalColumns - 2, hexesIterator)
     } catch {
       case e: NoSuchElementException =>
+        logger.debug(s"No such element in init $e")
       // do nothing
     } finally {
       if (hexesIterator.hasNext) {

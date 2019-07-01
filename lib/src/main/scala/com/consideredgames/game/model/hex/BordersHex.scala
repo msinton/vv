@@ -3,27 +3,25 @@ package com.consideredgames.game.model.hex
 import scala.collection.mutable.ListBuffer
 
 object BordersHex {
+
   /**
-   * Use of this method is to avoid duplicate boats etc.
-   *
-   * @param hex
-   * @param side
-   * @return
-   */
-  def listContainsBordersHexAtLocation(bordersHexes: Array[BordersHex], hex: Hex, side: Side): Boolean = {
+    * Use of this method is to avoid duplicate boats etc.
+    *
+    * @param hex
+    * @param side
+    * @return
+    */
+  def listContainsBordersHexAtLocation(bordersHexes: Array[BordersHex], hex: Hex, side: Side): Boolean =
     bordersHexes.exists(_.contains(hex, side))
-  }
 
-  def hexB(hexA: Hex, sideA: Side): Option[Hex] = {
+  def hexB(hexA: Hex, sideA: Side): Option[Hex] =
     hexA.neighbours.get(sideA)
-  }
 
-  def sideB(hexA: Hex, hexB: Option[Hex]): Option[Side] = {
+  def sideB(hexA: Hex, hexB: Option[Hex]): Option[Side] =
     hexB match {
       case Some(hex) => hex.getSide(hexA)
-      case _ => None
+      case _         => None
     }
-  }
 }
 
 abstract class BordersHex {
@@ -42,7 +40,9 @@ abstract class BordersHex {
     hexA.add(sideA, this)
     // add for hexB
     (hexB, sideB) match {
-      case (Some(h), Some(s)) => h.add(s, this)
+      case (Some(h), Some(s)) =>
+        h.add(s, this)
+        ()
       case _ => // do nothing
     }
   }
@@ -52,13 +52,12 @@ abstract class BordersHex {
     hexB foreach (_.remove(sideB.get, this))
   }
 
-  def contains(hex: Hex, side: Side): Boolean = {
+  def contains(hex: Hex, side: Side): Boolean =
     ((hexA == hex) && (sideA == side)) || (hexB.contains(hex) && sideB.contains(side))
-  }
 
   /**
-   * If the point given is one of the river's points then returns its <i>other</i> point.
-   */
+    * If the point given is one of the river's points then returns its <i>other</i> point.
+    */
   final def otherPoint(point: Point): Option[Point] = {
 
     val pointA = hexA.vertices.get(sideA.clockwiseVertex)
@@ -66,18 +65,16 @@ abstract class BordersHex {
 
     if (pointA.contains(point)) {
       pointB
-    }
-    else if (pointB.contains(point)) {
+    } else if (pointB.contains(point)) {
       pointA
-    }
-    else {
+    } else {
       None
     }
   }
 
   /**
-   * @return All the hexes which are neighbours of this BordersHexes, up to a maximum possible of four.
-   */
+    * @return All the hexes which are neighbours of this BordersHexes, up to a maximum possible of four.
+    */
   def getHexNeighbours = {
     val hexes = ListBuffer(hexA)
     hexB foreach (hexes.append(_))

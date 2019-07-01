@@ -8,6 +8,7 @@ object Dependencies {
     val scalactic     = "3.0.5"
     val scalatest     = "3.0.5"
     val akka          = "10.0.6"
+    val akkaTyped          = "2.5.20"
     val httpJson4s    = "1.14.0"
     val json4s        = "3.5.2"
     val jacksonMapper = "1.9.13"
@@ -23,6 +24,7 @@ object Dependencies {
     val scalatest     = "org.scalatest"              %% "scalatest"          % V.scalatest
     val akkaHttp      = "com.typesafe.akka"          %% "akka-http"          % V.akka
     val akkaTestkit   = "com.typesafe.akka"          %% "akka-http-testkit"  % V.akka
+    val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % V.akkaTyped
     val json4s        = "org.json4s"                 %% "json4s-native"      % V.json4s
     val httpJson4s    = "de.heikoseeberger"          %% "akka-http-json4s"   % V.httpJson4s
     val jacksonMapper = "org.codehaus.jackson"       % "jackson-mapper-asl"  % V.jacksonMapper
